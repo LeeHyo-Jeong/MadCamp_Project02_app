@@ -28,9 +28,9 @@ class _LoginPageState extends State<LoginPage> {
       },
       body: jsonEncode(<String, dynamic>{// 사용자 정보를 JSON 형태로 변환하여 body에 입력
         'access_token': accessToken,
-        'user_id': user.id,
-        'nickname': user.kakaoAccount?.profile?.nickname,// 사용자 정보 중 닉네임, 프로필 이미지, 이메일을 전송
-        'email': user.kakaoAccount?.email,
+        //'user_id': user.id,
+        'profile_nickname': user.kakaoAccount?.profile?.nickname,// 사용자 정보 중 닉네임, 프로필 이미지, 이메일을 전송
+        //'profile_email': user.kakaoAccount?.email,
       }),
     );
 
@@ -48,7 +48,10 @@ class _LoginPageState extends State<LoginPage> {
     if (await isKakaoTalkInstalled()) {
       try {
         token = await UserApi.instance.loginWithKakaoTalk();
+        User user = await UserApi.instance.me();
+        await sendUserInfoToBackend(token!.accessToken, user);
         Navigator.pushReplacementNamed(context, '/home');
+
       } catch (error) {
         print('카카오톡으로 로그인 실패 $error');
 
@@ -62,6 +65,8 @@ class _LoginPageState extends State<LoginPage> {
         try {
           // loginWithKakaoAccount(): 브라우저로 카카오톡을 열어 카카오 계정 입력해 로그인
           token = await UserApi.instance.loginWithKakaoAccount();
+          User user = await UserApi.instance.me();
+          await sendUserInfoToBackend(token!.accessToken, user);
           Navigator.pushReplacementNamed(context, '/home');
         } catch (error) {
           print('카카오계정으로 로그인 실패 $error');
@@ -70,6 +75,10 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       try {
         token = await UserApi.instance.loginWithKakaoAccount();
+        User user = await UserApi.instance.me();
+        print(user.kakaoAccount?.profile?.nickname);
+        print(token!.accessToken);
+        await sendUserInfoToBackend(token!.accessToken, user);
         Navigator.pushReplacementNamed(context, '/home');
       } catch (error) {
         print('카카오계정으로 로그인 실패 $error');
