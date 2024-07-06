@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -40,6 +41,12 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       print("Failed to send user info to backend: ${response.statusCode}");
     }
+  }
+
+  Future<void> _storeToken(OAuthToken token) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("kakao_access_token", token.accessToken);
+    await TokenManagerProvider.instance.manager.setToken(token);
   }
 
   Future<void> addMatch(Map<String, dynamic> matchData) async {
@@ -127,15 +134,15 @@ class _LoginPageState extends State<LoginPage> {
 
 
   Future<void> signInWithKakao() async {
-
     // 카카오톡 실행 가능 여부 확인
     // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
     if (await isKakaoTalkInstalled()) {
       try {
         token = await UserApi.instance.loginWithKakaoTalk();
         User user = await UserApi.instance.me();
+        await _storeToken(token!);
         await sendUserInfoToBackend(token!.accessToken, user);
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.of(context).pushReplacementNamed('/home');
 
       } catch (error) {
         print('카카오톡으로 로그인 실패 $error');
@@ -151,8 +158,9 @@ class _LoginPageState extends State<LoginPage> {
           // loginWithKakaoAccount(): 브라우저로 카카오톡을 열어 카카오 계정 입력해 로그인
           token = await UserApi.instance.loginWithKakaoAccount();
           User user = await UserApi.instance.me();
+          await _storeToken(token!);
           await sendUserInfoToBackend(token!.accessToken, user);
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.of(context).pushReplacementNamed('/home');
         } catch (error) {
           print('카카오계정으로 로그인 실패 $error');
         }
@@ -161,10 +169,11 @@ class _LoginPageState extends State<LoginPage> {
       try {
         token = await UserApi.instance.loginWithKakaoAccount();
         User user = await UserApi.instance.me();
+        await _storeToken(token!);
         print(user.kakaoAccount?.profile?.nickname);
         print(token!.accessToken);
         await sendUserInfoToBackend(token!.accessToken, user);
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.of(context).pushReplacementNamed('/home');
       } catch (error) {
         print('카카오계정으로 로그인 실패 $error');
       }
