@@ -29,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
       body: jsonEncode(<String, dynamic>{// 사용자 정보를 JSON 형태로 변환하여 body에 입력
         'access_token': accessToken,
         //'user_id': user.id,
+        'image_url': user.kakaoAccount?.profile?.profileImageUrl,// 사용자 정보 중 프로필 이미지 URL을 전송
         'profile_nickname': user.kakaoAccount?.profile?.nickname,// 사용자 정보 중 닉네임, 프로필 이미지, 이메일을 전송
         //'profile_email': user.kakaoAccount?.email,
       }),
@@ -40,6 +41,90 @@ class _LoginPageState extends State<LoginPage> {
       print("Failed to send user info to backend: ${response.statusCode}");
     }
   }
+
+  Future<void> addMatch(Map<String, dynamic> matchData) async {
+    final url = Uri.parse('http://localhost:3000/api/match');
+
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(matchData),
+    );
+
+    if (response.statusCode == 200) {
+      print("Match successfully added");
+    } else {
+      print("Failed to add match: ${response.statusCode}");
+    }
+  }
+
+  Future<void> getMatch(String id) async {
+    final url = Uri.parse('http://localhost:3000/api/match/$id');
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      print("Match data: ${response.body}");
+    } else {
+      print("Failed to fetch match: ${response.statusCode}");
+    }
+  }
+
+  Future<void> updateMatch(String id, Map<String, dynamic> matchData) async {
+    final url = Uri.parse('http://localhost:3000/api/match/$id');
+
+    final response = await http.put(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(matchData),
+    );
+
+    if (response.statusCode == 200) {
+      print("Match successfully updated");
+    } else {
+      print("Failed to update match: ${response.statusCode}");
+    }
+  }
+
+
+  Future<void> partialUpdateMatch(String id, Map<String, dynamic> matchData) async {
+    final url = Uri.parse('http://localhost:3000/api/match/$id');
+
+    final response = await http.patch(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(matchData),
+    );
+
+    if (response.statusCode == 200) {
+      print("Match successfully partially updated");
+    } else {
+      print("Failed to partially update match: ${response.statusCode}");
+    }
+  }
+
+  Future<void> deleteMatch(String id) async {
+    final url = Uri.parse('http://localhost:3000/api/match/$id');
+
+    final response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      print("Match successfully deleted");
+    } else {
+      print("Failed to delete match: ${response.statusCode}");
+    }
+  }
+
+
+
+
+
 
   Future<void> signInWithKakao() async {
 
