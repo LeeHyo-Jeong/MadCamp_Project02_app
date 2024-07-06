@@ -1,6 +1,91 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'match.dart';
+import 'package:http/http.dart' as http;
+
+Future<void> addMatch(Match match) async {
+  final url = Uri.parse('http://localhost:3000/api/match');
+
+  final response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(match.toJson()),
+  );
+
+  if (response.statusCode == 200) {
+    print("Match successfully added");
+  } else {
+    print("Failed to add match: ${response.statusCode}");
+  }
+}
+
+Future<void> getMatch(String id) async {
+  final url = Uri.parse('http://localhost:3000/api/match/$id');
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final Map<String, dynamic> matchData = jsonDecode(response.body);
+    final match = Match.fromJson(matchData);
+    print("Match data: ${match.toJson()}");
+  } else {
+    print("Failed to fetch match: ${response.statusCode}");
+  }
+}
+
+
+
+Future<void> updateMatch(String id, Match match) async {
+  final url = Uri.parse('http://localhost:3000/api/match/$id');
+
+  final response = await http.put(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(match.toJson()),
+  );
+
+  if (response.statusCode == 200) {
+    print("Match successfully updated");
+  } else {
+    print("Failed to update match: ${response.statusCode}");
+  }
+}
+
+Future<void> deleteMatch(String id) async {
+  final url = Uri.parse('http://localhost:3000/api/match/$id');
+
+  final response = await http.delete(url);
+
+  if (response.statusCode == 200) {
+    print("Match successfully deleted");
+  } else {
+    print("Failed to delete match: ${response.statusCode}");
+  }
+}
+/*
+Future<void> partialUpdateMatch(String id, Map<String, dynamic> matchData) async {
+  final url = Uri.parse('http://localhost:3000/api/match/$id');
+
+  final response = await http.patch(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(matchData),
+  );
+
+  if (response.statusCode == 200) {
+    print("Match successfully partially updated");
+  } else {
+    print("Failed to partially update match: ${response.statusCode}");
+  }
+}
+*/
 
 class PostMatchPage extends StatefulWidget {
   @override
@@ -34,6 +119,7 @@ class _PostMatchPageState extends State<PostMatchPage> {
         max_member: _selectedMemberCount!,
         level: int.parse(_levelController.text),
       );
+      addMatch(newMatch);
       Navigator.pop(context, newMatch);
     }
   }
