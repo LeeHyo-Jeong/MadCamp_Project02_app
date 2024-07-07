@@ -22,7 +22,7 @@ Future<void> addMatch(Match match) async {
   }
 }
 
-Future<void> getMatch(String id) async {
+Future<Match> getMatch(String id) async {
   final url = Uri.parse('http://localhost:3000/api/match/$id');
 
   final response = await http.get(url);
@@ -30,9 +30,9 @@ Future<void> getMatch(String id) async {
   if (response.statusCode == 200) {
     final Map<String, dynamic> matchData = jsonDecode(response.body);
     final match = Match.fromJson(matchData);
-    print("Match data: ${match.toJson()}");
+    return match;
   } else {
-    print("Failed to fetch match: ${response.statusCode}");
+    throw Exception("Failed to fetch match: ${response.statusCode}");
   }
 }
 Future<List<Match>> getAllMatches() async {
@@ -80,6 +80,63 @@ Future<void> deleteMatch(String id) async {
     print("Failed to delete match: ${response.statusCode}");
   }
 }
+
+
+// 예약한 경기 목록을 가져오는 함수
+Future<List<Match>> getUserReservations(String userId) async {
+  final url = Uri.parse('http://localhost:3000/api/user/$userId/reservations');
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final List<dynamic> reservationsData = jsonDecode(response.body);
+    final List<Match> reservations = reservationsData.map((data) => Match.fromJson(data)).toList();//
+    return reservations;
+  } else {
+    throw Exception("Failed to fetch reservations: ${response.statusCode}");
+  }
+}
+
+Future<void> addReservation(String matchId, String userId) async {
+  final url = Uri.parse('http://localhost:3000/api/match/$matchId/reserve');
+
+  final response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'userId': userId,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    print("Reservation added successfully");
+  } else {
+    print("Failed to add reservation: ${response.statusCode}");
+  }
+}
+
+Future<void> cancelReservation(String matchId, String userId) async {
+  final url = Uri.parse('http://localhost:3000/api/match/$matchId/cancel');
+
+  final response = await http.post(
+    url,
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'userId': userId,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    print("Reservation cancelled successfully");
+  } else {
+    print("Failed to cancel reservation: ${response.statusCode}");
+  }
+}
+
 /*
 Future<void> partialUpdateMatch(String id, Map<String, dynamic> matchData) async {
   final url = Uri.parse('http://localhost:3000/api/match/$id');
