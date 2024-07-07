@@ -176,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(builder: (context) => PostMatchPage()),
                   );
                   if (newMatch != null) {
-                    _addMatch(newMatch);
+                    //_addMatch(newMatch);
                   }
                 },
                 label: Text("팀원 모집하기", style: TextStyle(color: Colors.white)),

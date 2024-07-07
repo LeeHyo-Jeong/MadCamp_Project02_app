@@ -30,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
       body: jsonEncode(<String, dynamic>{// 사용자 정보를 JSON 형태로 변환하여 body에 입력
         'access_token': accessToken,
         //'user_id': user.id,
+        'image_url': user.kakaoAccount?.profile?.profileImageUrl,// 사용자 정보 중 프로필 이미지 URL을 전송
         'profile_nickname': user.kakaoAccount?.profile?.nickname,// 사용자 정보 중 닉네임, 프로필 이미지, 이메일을 전송
         //'profile_email': user.kakaoAccount?.email,
       }),
@@ -47,6 +48,7 @@ class _LoginPageState extends State<LoginPage> {
     await prefs.setString("kakao_access_token", token.accessToken);
     await TokenManagerProvider.instance.manager.setToken(token);
   }
+
 
   Future<void> signInWithKakao() async {
     // 카카오톡 실행 가능 여부 확인
