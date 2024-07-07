@@ -25,12 +25,14 @@ class _LoginPageState extends State<LoginPage> {
     // 사용자 정보를 백엔드 서버로 전송하기 위해 http 패키지를 사용
     final response = await http.post(
       url,
+
       headers: <String, String>{// 헤더에 Content-Type을 application/json으로 설정
         'Content-Type': 'application/json; charset=UTF-8',
       },
+
       body: jsonEncode(<String, dynamic>{// 사용자 정보를 JSON 형태로 변환하여 body에 입력
         'access_token': accessToken,
-        //'user_id': user.id,
+        'user_id': user.id,
         'image_url': user.kakaoAccount?.profile?.profileImageUrl,// 사용자 정보 중 프로필 이미지 URL을 전송
         'profile_nickname': user.kakaoAccount?.profile?.nickname,// 사용자 정보 중 닉네임, 프로필 이미지, 이메일을 전송
         //'profile_email': user.kakaoAccount?.email,
@@ -71,11 +73,13 @@ class _LoginPageState extends State<LoginPage> {
         token = await UserApi.instance.loginWithKakaoTalk();
         User user = await UserApi.instance.me();
         await _storeToken(token!);
+        print("토큰");
         await sendUserInfoToBackend(token!.accessToken, user);
+        print("백엔드전송");
         if(await _isFirstLogin(user.id)){
           final result = await showDialog(
             context: context,
-            builder: (context) => FirstLoginInfoDialog(accessToken: token!.accessToken)
+            builder: (context) => FirstLoginInfoDialog(accessToken: token!.accessToken, user: user)
           );
 
           if(result == true){
@@ -103,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
           if(await _isFirstLogin(user.id)){
             final result = await showDialog(
                 context: context,
-                builder: (context) => FirstLoginInfoDialog(accessToken: token!.accessToken)
+                builder: (context) => FirstLoginInfoDialog(accessToken: token!.accessToken,user: user)
             );
 
             if(result == true){
@@ -128,7 +132,7 @@ class _LoginPageState extends State<LoginPage> {
         if(await _isFirstLogin(user.id)){
           final result = await showDialog(
               context: context,
-              builder: (context) => FirstLoginInfoDialog(accessToken: token!.accessToken)
+              builder: (context) => FirstLoginInfoDialog(accessToken: token!.accessToken, user: user)
           );
 
           if(result == true){
