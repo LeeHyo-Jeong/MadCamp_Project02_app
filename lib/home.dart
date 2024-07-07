@@ -1,8 +1,6 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:kakaotest/first_login.dart';
 import 'package:kakaotest/match.dart';
 import 'package:kakaotest/match_detail.dart';
 import 'package:kakaotest/post_match.dart';
@@ -11,15 +9,16 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final User user;
+
+  const HomePage({super.key, required this.user});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Match> matches = []; // 초기 매치 데이터
-  List<Match> newMatches = []; // 추가된 매치를 저장할 리스트
+  List<Match> matches = [];
 
   @override
   void initState() {
@@ -28,49 +27,16 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchMatches() async {
-    List<Match> fetchedMatches=await getAllMatches();
+    List<Match> fetchedMatches = await getAllMatches();
     setState(() {
       matches = fetchedMatches;
     });
   }
 
-  Future<bool> _isFirstLogin(int userId) async{
-    final url = Uri.parse('https://localhost:3000/api/is-first-login/$userId');
-    final response = await http.get(url);
-
-    if(response.statusCode == 200){
-      final result = jsonDecode(response.body);
-      return result['isFirstLogin'];
-    } else{
-      print('Failed to check first login: ${response.statusCode}');
-      return false;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final User user = ModalRoute.of(context)?.settings.arguments as User;
-
-    WidgetsBinding.instance?.addPostFrameCallback((_) async{
-      if(await _isFirstLogin(user.id)){
-        final result = await showDialog(
-          context: context,
-          builder: (context) => FirstLoginInfoDialog(accessToken: 'token', user: user),
-        );
-
-        if(result == true){
-          Fluttertoast.showToast(
-            msg: 'First login info submitted',
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black54,
-            fontSize: 15.0,
-            textColor: Colors.white,
-          );
-        }
-      }
-    });
+    User user = widget.user;
+    String? profileImageUrl = user.kakaoAccount?.profile?.profileImageUrl;
 
     return Scaffold(
       appBar: AppBar(
@@ -86,8 +52,6 @@ class _HomePageState extends State<HomePage> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Failed to load user info'));
           } else {
-            User user = snapshot.data!;
-            String? profileImageUrl = user.kakaoAccount?.profile?.profileImageUrl;
             return Scaffold(
               backgroundColor: Colors.white,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -116,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              body: ListView.builder( // db에서 얻어와서 보여주는 걸로 수정해야 함
+              body: ListView.builder(
                 itemCount: matches.length,
                 itemBuilder: (context, index) {
                   Match match = matches[index];
@@ -147,7 +111,6 @@ class _HomePageState extends State<HomePage> {
                   );
                   if (newMatch != null) {
                     setState(() {
-                      // 경기가 등록되었음을 알린다
                       Fluttertoast.showToast(
                         msg: '새 경기가 등록되었습니다',
                         toastLength: Toast.LENGTH_SHORT,

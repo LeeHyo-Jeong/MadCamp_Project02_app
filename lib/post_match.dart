@@ -176,7 +176,6 @@ class _PostMatchPageState extends State<PostMatchPage> {
   int? _selectedMemberCount;
   final List<int> _memberOptions = [6, 7, 8, 9, 10, 11, 12];
 
-  // 추후 db에 추가하는 걸로 변경해야 함
   void _submitForm() {
     if (_formKey.currentState!.validate() && _selectedDate != null && _selectedTime != null && _selectedMemberCount != null) {
       final newMatch = Match(
