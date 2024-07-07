@@ -5,7 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakaotest/reservation.dart';
 import 'package:kakaotest/home.dart';
 import 'package:kakaotest/login.dart';
-import 'package:kakaotest/profilePage.dart';
+import 'package:kakaotest/profile.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 void main() async {
@@ -28,8 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kakao Login',
       theme: ThemeData(
-        primaryColor: Colors.white,
-        scaffoldBackgroundColor: Colors.white,
+        primarySwatch: Colors.grey,
       ),
       home: MyHomePage(),
       routes: {
@@ -97,33 +96,25 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
-        selectedIconTheme: IconThemeData(color: Colors.black),
-        unselectedIconTheme: IconThemeData(color: Colors.grey),
         type: BottomNavigationBarType.shifting,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: '홈',
-            backgroundColor: Colors.white,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline),
-            label: '내 예약',
-            backgroundColor: Colors.white,
+            icon: Icon(Icons.history),
+            label: '내 경기',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.edit),
+            icon: Icon(Icons.portrait),
             label: '프로필',
-            backgroundColor: Colors.white,
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
-        selectedLabelStyle: TextStyle(
-          fontWeight: FontWeight.bold
-        ),
         unselectedItemColor: Colors.black54,
+        showUnselectedLabels: true,
         onTap: _onItemTapped,
       ),
     );

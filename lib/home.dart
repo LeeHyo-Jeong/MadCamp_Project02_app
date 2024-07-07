@@ -89,11 +89,13 @@ class _HomePageState extends State<HomePage> {
       ),
     ];
 
+    // db에서 얻어온 데이터로 matches 리스트 할당
     setState(() {
       matches = dummyMatches;
     });
   }
 
+  // 새로운 match를 db에 추가
   void _addMatch(Match match) {
     setState(() {
       matches.add(match);
@@ -146,7 +148,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              body: ListView.builder(
+              body: ListView.builder( // db에서 얻어와서 보여주는 걸로 수정해야 함
                 itemCount: matches.length,
                 itemBuilder: (context, index) {
                   Match match = matches[index];

@@ -290,7 +290,10 @@ class _PostMatchPageState extends State<PostMatchPage> {
                   backgroundColor: Colors.black,
                 ),
                 onPressed: _submitForm,
-                child: Text('등록', style: TextStyle(color: Colors.white)),
+                child: Text('등록',
+                style: TextStyle(
+                  color: Colors.white,
+                )),
               ),
             ],
           ),
