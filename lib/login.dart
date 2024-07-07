@@ -50,19 +50,6 @@ class _LoginPageState extends State<LoginPage> {
     await TokenManagerProvider.instance.manager.setToken(token);
   }
 
-  Future<bool> _isFirstLogin(int userId) async{
-    final url = Uri.parse('https://localhost:3000/api/is-first-login/$userId');
-    final response = await http.get(url);
-
-    if(response.statusCode == 200){
-      final result = jsonDecode(response.body);
-      return result['isFirstLogin'];
-    } else{
-      print('Failed to check first login: ${response.statusCode}');
-      return false;
-    }
-  }
-
   Future<void> signInWithKakao() async {
     // 카카오톡 실행 가능 여부 확인
     // 카카오톡 실행이 가능하면 카카오톡으로 로그인, 아니면 카카오계정으로 로그인
@@ -72,18 +59,7 @@ class _LoginPageState extends State<LoginPage> {
         User user = await UserApi.instance.me();
         await _storeToken(token!);
         await sendUserInfoToBackend(token!.accessToken, user);
-        if(await _isFirstLogin(user.id)){
-          final result = await showDialog(
-            context: context,
-            builder: (context) => FirstLoginInfoDialog(accessToken: token!.accessToken)
-          );
-
-          if(result == true){
-            Navigator.of(context).pushReplacementNamed('/home');
-          }
-        } else {
-          Navigator.of(context).pushReplacementNamed('/home');
-        }
+        Navigator.of(context).pushReplacementNamed('/home', arguments: user);
       } catch (error) {
         print('카카오톡으로 로그인 실패 $error');
 
@@ -100,18 +76,7 @@ class _LoginPageState extends State<LoginPage> {
           User user = await UserApi.instance.me();
           await _storeToken(token!);
           await sendUserInfoToBackend(token!.accessToken, user);
-          if(await _isFirstLogin(user.id)){
-            final result = await showDialog(
-                context: context,
-                builder: (context) => FirstLoginInfoDialog(accessToken: token!.accessToken)
-            );
-
-            if(result == true){
-              Navigator.of(context).pushReplacementNamed('/home');
-            }
-          } else {
-            Navigator.of(context).pushReplacementNamed('/home');
-          }
+          Navigator.of(context).pushReplacementNamed('/home', arguments: user);
         } catch (error) {
           print('카카오계정으로 로그인 실패 $error');
         }
@@ -124,19 +89,7 @@ class _LoginPageState extends State<LoginPage> {
         print(user.kakaoAccount?.profile?.nickname);
         print(token!.accessToken);
         await sendUserInfoToBackend(token!.accessToken, user);
-
-        if(await _isFirstLogin(user.id)){
-          final result = await showDialog(
-              context: context,
-              builder: (context) => FirstLoginInfoDialog(accessToken: token!.accessToken)
-          );
-
-          if(result == true){
-            Navigator.of(context).pushReplacementNamed('/home');
-          }
-        } else {
-          Navigator.of(context).pushReplacementNamed('/home');
-        }
+        Navigator.of(context).pushReplacementNamed('/home', arguments: user);
       } catch (error) {
         print('카카오계정으로 로그인 실패 $error');
       }

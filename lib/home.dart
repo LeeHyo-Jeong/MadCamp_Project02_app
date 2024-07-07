@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:kakaotest/first_login.dart';
 import 'package:kakaotest/match.dart';
-import 'package:intl/intl.dart';
 import 'package:kakaotest/match_detail.dart';
 import 'package:kakaotest/post_match.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,8 +34,44 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<bool> _isFirstLogin(int userId) async{
+    final url = Uri.parse('https://localhost:3000/api/is-first-login/$userId');
+    final response = await http.get(url);
+
+    if(response.statusCode == 200){
+      final result = jsonDecode(response.body);
+      return result['isFirstLogin'];
+    } else{
+      print('Failed to check first login: ${response.statusCode}');
+      return false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final User user = ModalRoute.of(context)?.settings.arguments as User;
+
+    WidgetsBinding.instance?.addPostFrameCallback((_) async{
+      if(await _isFirstLogin(user.id)){
+        final result = await showDialog(
+          context: context,
+          builder: (context) => FirstLoginInfoDialog(accessToken: 'token', user: user),
+        );
+
+        if(result == true){
+          Fluttertoast.showToast(
+            msg: 'First login info submitted',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black54,
+            fontSize: 15.0,
+            textColor: Colors.white,
+          );
+        }
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,

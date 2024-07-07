@@ -2,19 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+
 class FirstLoginInfoDialog extends StatefulWidget {
   final String accessToken;
+  final User user;
 
-  const FirstLoginInfoDialog({super.key, required this.accessToken});
+  const FirstLoginInfoDialog({super.key, required this.accessToken, required this.user});
 
   @override
-  State<FirstLoginInfoDialog> createState() => _FirstLoginInfoDialogState();
+  State<FirstLoginInfoDialog> createState() => _FirstLoginInfoDialogState(user: user);
 }
 
 class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
+  final User user;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _teamController = TextEditingController();
   final TextEditingController _levelController = TextEditingController();
+
+  _FirstLoginInfoDialogState({required this.user});
 
   int? _selectedLevel;
   final List<int> _levelOptions = [1, 2, 3, 4, 5];
@@ -31,8 +37,8 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
           'Authorization': 'Bearer ${widget.accessToken}'
         },
         body: jsonEncode({
-          'level': _levelController.text,
-          'team': _teamController.text
+          'level': level,
+          'team': team,
         }),
       );
 
