@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:kakaotest/friendsPage.dart';
+import 'package:kakaotest/reservation.dart';
 import 'package:kakaotest/home.dart';
 import 'package:kakaotest/login.dart';
 import 'package:kakaotest/profilePage.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 void main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kakao Login',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white,
       ),
       home: MyHomePage(),
       routes: {
@@ -47,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
     HomePage(),
-    Friendspage(),
+    ReservationPage(),
     Profilepage(),
   ];
   bool _isLoggedIn = false;
@@ -87,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!_isLoggedIn) {
       return Scaffold(
         body: Center(
-          child: CircularProgressIndicator(),
+          child: SpinKitChasingDots(color: Colors.black38),
         ),
       );
     }
@@ -95,22 +97,33 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedIconTheme: IconThemeData(color: Colors.black),
+        unselectedIconTheme: IconThemeData(color: Colors.grey),
+        type: BottomNavigationBarType.shifting,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: '홈',
+            backgroundColor: Colors.white,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people_outline),
-            label: 'Friends',
+            label: '내 예약',
+            backgroundColor: Colors.white,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Profile',
+            icon: Icon(Icons.edit),
+            label: '프로필',
+            backgroundColor: Colors.white,
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
+        selectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.bold
+        ),
+        unselectedItemColor: Colors.black54,
         onTap: _onItemTapped,
       ),
     );

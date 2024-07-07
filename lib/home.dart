@@ -4,6 +4,7 @@ import 'package:kakaotest/match.dart';
 import 'package:intl/intl.dart';
 import 'package:kakaotest/match_detail.dart';
 import 'package:kakaotest/post_match.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -103,22 +104,25 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Home"),
+        backgroundColor: Colors.white,
+        title: Text("홈"),
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<User>(
         future: UserApi.instance.me(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: SpinKitChasingDots(color: Colors.black38));
           } else if (snapshot.hasError) {
             return Center(child: Text('Failed to load user info'));
           } else {
             User user = snapshot.data!;
             String? profileImageUrl = user.kakaoAccount?.profile?.profileImageUrl;
             return Scaffold(
+              backgroundColor: Colors.white,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
               appBar: AppBar(
+                backgroundColor: Colors.white,
                 automaticallyImplyLeading: false,
                 title: Row(
                   children: [
@@ -147,6 +151,7 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   Match match = matches[index];
                   return Card(
+                    color: Colors.white70,
                     elevation: 4,
                     margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                     child: ListTile(
