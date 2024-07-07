@@ -284,8 +284,14 @@ class _PostMatchPageState extends State<PostMatchPage> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                ),
                 onPressed: _submitForm,
-                child: Text('Submit'),
+                child: Text('등록',
+                style: TextStyle(
+                  color: Colors.white,
+                )),
               ),
             ],
           ),
