@@ -170,13 +170,15 @@ class _PostMatchPageState extends State<PostMatchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text('새로운 경기 등록'),
       ),
       body: Card(
-        elevation: 30,
+        //elevation: 30,
         shadowColor: Colors.black,
-        color: Color(0xffe6e6e6),
+        color: Color(0xfff5f5f5),
         child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -285,8 +287,14 @@ class _PostMatchPageState extends State<PostMatchPage> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                ),
                 onPressed: _submitForm,
-                child: Text('Submit'),
+                child: Text('등록',
+                style: TextStyle(
+                  color: Colors.white,
+                )),
               ),
             ],
           ),

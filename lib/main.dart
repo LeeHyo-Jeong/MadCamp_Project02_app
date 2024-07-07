@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:kakaotest/friendsPage.dart';
+import 'package:kakaotest/reservation.dart';
 import 'package:kakaotest/home.dart';
 import 'package:kakaotest/login.dart';
-import 'package:kakaotest/profilePage.dart';
+import 'package:kakaotest/profile.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 void main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kakao Login',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.grey,
       ),
       home: MyHomePage(),
       routes: {
@@ -47,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
     HomePage(),
-    Friendspage(),
+    ReservationPage(),
     Profilepage(),
   ];
   bool _isLoggedIn = false;
@@ -87,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!_isLoggedIn) {
       return Scaffold(
         body: Center(
-          child: CircularProgressIndicator(),
+          child: SpinKitChasingDots(color: Colors.black38),
         ),
       );
     }
@@ -95,22 +96,25 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.shifting,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: '홈',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_outline),
-            label: 'Friends',
+            icon: Icon(Icons.history),
+            label: '내 경기',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Profile',
+            icon: Icon(Icons.portrait),
+            label: '프로필',
           ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.black54,
+        showUnselectedLabels: true,
         onTap: _onItemTapped,
       ),
     );
