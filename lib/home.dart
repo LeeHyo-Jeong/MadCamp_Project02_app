@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:kakaotest/match_detail.dart';
 import 'package:kakaotest/post_match.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,81 +25,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchMatches() async {
-    // 현재는 더미 데이터로 부터 경기 정보를 얻어와서 저장하도록 함
-    // 나중에 db로부터 데이터 받아오는 걸로 변경해야 함
-    List<Match> dummyMatches = [
-      Match(
-        matchId: 1,
-        date: DateFormat("yyyy년 MM월 dd일").format(DateTime(2024, 7, 6)),
-        time: DateFormat("HH시 mm분").format(DateTime(2024, 7, 6, 22, 0)),
-        place: "대전 유성구 유성대로713번길 83",
-        matchTitle: "대전 유성 풋살구장 1구장",
-        content: "같이 축구해요",
-        max_member: 11,
-        level: 5,
-      ),
-      Match(
-        matchId: 2,
-        date: DateFormat("yyyy년 MM월 dd일").format(DateTime(2024, 7, 8)),
-        time: DateFormat("HH시 mm분").format(DateTime(2024, 7, 8, 17, 30)),
-        place: "경기 고양시 일산동구 중앙로1275번길 64",
-        matchTitle: "고양 HM풋살파크 일산점 B구장",
-        content: "같이 축구해요",
-        max_member: 6,
-        level: 3,
-      ),
-      Match(
-        matchId: 3,
-        date: DateFormat("yyyy년 MM월 dd일").format(DateTime(2024, 7, 6)),
-        time: DateFormat("HH시 mm분").format(DateTime(2024, 7, 6, 20, 30)),
-        place: "서울 송파구 성내천로29길 31",
-        matchTitle: "서울 송파 천마 풋살파크 4구장",
-        content: "같이 축구해요",
-        max_member: 6,
-        level: 5,
-      ),
-      Match(
-        matchId: 4,
-        date: DateFormat("yyyy년 MM월 dd일").format(DateTime(2024, 7, 6)),
-        time: DateFormat("HH시 mm분").format(DateTime(2024, 7, 6, 20, 0)),
-        place: "경기 성남시 수정구 사송로 77번길 31",
-        matchTitle: "성남 분당 킹주니어 스포츠 클럽",
-        content: "같이 축구해요",
-        max_member: 8,
-        level: 1,
-      ),
-      Match(
-        matchId: 5,
-        date: DateFormat("yyyy년 MM월 dd일").format(DateTime(2024, 7, 6)),
-        time: DateFormat("HH시 mm분").format(DateTime(2024, 7, 6, 22, 0)),
-        place: "집에가고싶다 경기도 광주시 경충대로 1422번길 42",
-        matchTitle: "준형아언제와...",
-        content: "~~~~~집가고시풔~~~~",
-        max_member: 6,
-        level: 2,
-      ),
-      Match(
-        matchId: 6,
-        date: DateFormat("yyyy년 MM월 dd일").format(DateTime(2024, 7, 6)),
-        time: DateFormat("HH시 mm분").format(DateTime(2024, 7, 6, 22, 0)),
-        place: "집에가고싶다 경기도 광주시 경충대로 1422번길 42",
-        matchTitle: "고수만 오셈",
-        content: "같이 축구해요",
-        max_member: 6,
-        level: 2,
-      ),
-    ];
-
     List<Match> fetchedMatches=await getAllMatches();
     setState(() {
       matches = fetchedMatches;
-    });
-  }
-
-  // 새로운 match를 db에 추가
-  void _addMatch(Match match) {
-    setState(() {
-      matches.add(match);
     });
   }
 
@@ -178,10 +107,21 @@ class _HomePageState extends State<HomePage> {
                     MaterialPageRoute(builder: (context) => PostMatchPage()),
                   );
                   if (newMatch != null) {
-                    //_addMatch(newMatch);
+                    setState(() {
+                      // 경기가 등록되었음을 알린다
+                      Fluttertoast.showToast(
+                        msg: '새 경기가 등록되었습니다',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.CENTER,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.black54,
+                        fontSize: 15.0,
+                        textColor: Colors.white,
+                      );
+                    });
                   }
                 },
-                label: Text("팀원 모집하기", style: TextStyle(color: Colors.white)),
+                label: Text("새 경기 등록하기", style: TextStyle(color: Colors.white)),
                 backgroundColor: Colors.black,
               ),
             );
