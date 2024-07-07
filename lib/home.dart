@@ -88,8 +88,9 @@ class _HomePageState extends State<HomePage> {
       ),
     ];
 
+    List<Match> fetchedMatches=await getAllMatches();
     setState(() {
-      matches = dummyMatches;
+      matches = fetchedMatches;
     });
   }
 

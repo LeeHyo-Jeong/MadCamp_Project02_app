@@ -35,18 +35,19 @@ Future<void> getMatch(String id) async {
     print("Failed to fetch match: ${response.statusCode}");
   }
 }
-Future<void> getAllMatches() async {
+Future<List<Match>> getAllMatches() async {
   final url = Uri.parse('http://localhost:3000/api/match');
 
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
     final List<dynamic> matchesData = jsonDecode(response.body);
-    final List<Match> matches = matchesData.map((data) => Match.fromJson(data)).toList();
+    final List<Match> matches = matchesData.map((data) => Match.fromJson(data))
+        .toList();
     print("Matches data: ${matches.map((match) => match.toJson())}");
-  } else {
-    print("Failed to fetch matches: ${response.statusCode}");
-  }
+    return matches;
+  }else {
+    throw Exception("Failed to fetch matches: ${response.statusCode}");  }
 }
 
 
