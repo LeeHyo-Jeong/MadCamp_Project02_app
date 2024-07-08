@@ -17,7 +17,6 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
   final User user;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _teamController = TextEditingController();
-  final TextEditingController _levelController = TextEditingController();
 
   _FirstLoginInfoDialogState({required this.user});
   int? _selectedLevel;
@@ -25,8 +24,9 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
 
   Future<void> _submitForm() async{
     if(_formKey.currentState!.validate()) {
-      final level = _levelController.text;
+      final level = _selectedLevel;
       final team = _teamController.text.isNotEmpty ? _teamController.text : '무소속';
+      final userId = user.id.toString();
 
       final response = await http.post(
         Uri.parse('http://localhost:3000/api/user-info'),
@@ -40,11 +40,14 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
           'user_id': user.id,
           'level': level,
           'team': team,
+          'user_id': userId,
         }),
       );
 
+      print(response.statusCode);
+
       if(response.statusCode == 200){
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pop(context, true);
       } else{
         print('Failed to save user info');
       }

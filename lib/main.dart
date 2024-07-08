@@ -6,7 +6,10 @@ import 'package:kakaotest/reservation.dart';
 import 'package:kakaotest/home.dart';
 import 'package:kakaotest/login.dart';
 import 'package:kakaotest/profile.dart';
+import 'package:kakaotest/first_login.dart'; // FirstLoginInfoDialog 가져오기
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart'; // Fluttertoast 패키지 추가
+import 'package:http/http.dart' as http; // http 패키지 추가
 
 void main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -30,50 +33,62 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.grey,
       ),
-      home: MyHomePage(),
+      home: LoginPage(),
       routes: {
         '/login': (context) => LoginPage(),
-        '/home': (context) => MyHomePage(),
       },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  final User user;
+  final bool isFirstLogin;
+
+  MyHomePage({required this.user, required this.isFirstLogin});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
-  final List<Widget> _pages = [
-    HomePage(),
-    ReservationPage(),
-    Profilepage(),
-  ];
-  bool _isLoggedIn = false;
+  bool _dialogShown = false;
 
   @override
   void initState() {
     super.initState();
-    _checkLoginStatus();
-  }
+    if (widget.isFirstLogin && !_dialogShown) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        _dialogShown = true;
+        final result = await showDialog(
+          context: context,
+          builder: (context) => FirstLoginInfoDialog(accessToken: 'token', user: widget.user),
+        );
 
-  Future<void> _checkLoginStatus() async {// 사용자가 로그인한 상태인지 확인
-    OAuthToken? token = await TokenManagerProvider.instance.manager.getToken();
+        if (result == true) {
+          final response = await http.put(
+            Uri.parse('http://localhost:3000/api/update-first-login/${widget.user.id}'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          );
 
-    if (token != null) {
-      try {
-        User user = await UserApi.instance.me();
-        setState(() {
-          _isLoggedIn = true;
-        });
-      } catch (e) {
-        print("Failed to load user info with stored token: $e");
-        Navigator.of(context).pushReplacementNamed('/login');
-      }
-    } else {
-      Navigator.of(context).pushReplacementNamed('/login');
+          if (response.statusCode == 200) {
+            Fluttertoast.showToast(
+              msg: 'First login info submitted',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black54,
+              fontSize: 15.0,
+              textColor: Colors.white,
+            );
+          } else {
+            print('Failed to update isFirstLogin');
+          }
+        }
+      });
     }
   }
 
@@ -85,16 +100,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isLoggedIn) {
-      return Scaffold(
-        body: Center(
-          child: SpinKitChasingDots(color: Colors.black38),
-        ),
-      );
-    }
-
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          HomePage(user: widget.user),
+          ReservationPage(),
+          Profilepage(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
         items: const <BottomNavigationBarItem>[
