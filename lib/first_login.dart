@@ -30,22 +30,18 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
 
       final response = await http.post(
         Uri.parse('http://localhost:3000/api/user-info'),
-        /*
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${widget.accessToken}'
         },
-         */
         body: jsonEncode({
           'user_id': user.id,
           'level': level,
           'team': team,
-          'user_id': userId,
         }),
       );
-
       print(response.statusCode);
-
+      print('Response body: ${response.body}');
       if(response.statusCode == 200){
         Navigator.pop(context, true);
       } else{
@@ -53,6 +49,8 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
       }
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {
