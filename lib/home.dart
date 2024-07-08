@@ -176,6 +176,12 @@ class HomePageState extends State<HomePage> {
                             builder: (context) => MatchDetailPage(match: match),
                           ),
                         );
+                        fetchMatches();
+                        if (result != null) {
+                          setState(() {
+                            fetchMatches();
+                          });
+                        }
                       },
                       trailing: Column(
                         children: [

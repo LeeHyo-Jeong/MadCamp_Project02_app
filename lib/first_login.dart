@@ -40,9 +40,8 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
           'team': team,
         }),
       );
-
       print(response.statusCode);
-
+      print('Response body: ${response.body}');
       if(response.statusCode == 200){
         Navigator.pop(context, true);
       } else{
@@ -50,6 +49,8 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
       }
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

@@ -44,7 +44,7 @@ Future<List<Match>> getAllMatches() async {
     final List<dynamic> matchesData = jsonDecode(response.body);
     final List<Match> matches = matchesData.map((data) => Match.fromJson(data))
         .toList();
-    print("Matches data: ${matches.map((match) => match.toJson())}");
+    //print("Matches data: ${matches.map((match) => match.toJson())}");
     return matches;
   }else {
     throw Exception("Failed to fetch matches: ${response.statusCode}");  }
@@ -81,81 +81,6 @@ Future<void> deleteMatch(String id) async {
   }
 }
 
-
-// 예약한 경기 목록을 가져오는 함수
-Future<List<Match>> getUserReservations(String userId) async {
-  final url = Uri.parse('http://localhost:3000/api/user/$userId/reservations');
-
-  final response = await http.get(url);
-
-  if (response.statusCode == 200) {
-    final List<dynamic> reservationsData = jsonDecode(response.body);
-    final List<Match> reservations = reservationsData.map((data) => Match.fromJson(data)).toList();//
-    return reservations;
-  } else {
-    throw Exception("Failed to fetch reservations: ${response.statusCode}");
-  }
-}
-
-Future<void> addReservation(String matchId, String userId) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$matchId/reserve');
-
-  final response = await http.post(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'userId': userId,
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    print("Reservation added successfully");
-  } else {
-    print("Failed to add reservation: ${response.statusCode}");
-  }
-}
-
-Future<void> cancelReservation(String matchId, String userId) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$matchId/cancel');
-
-  final response = await http.post(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'userId': userId,
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    print("Reservation cancelled successfully");
-  } else {
-    print("Failed to cancel reservation: ${response.statusCode}");
-  }
-}
-
-/*
-Future<void> partialUpdateMatch(String id, Map<String, dynamic> matchData) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$id');
-
-  final response = await http.patch(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(matchData),
-  );
-
-  if (response.statusCode == 200) {
-    print("Match successfully partially updated");
-  } else {
-    print("Failed to partially update match: ${response.statusCode}");
-  }
-}
-*/
 
 class PostMatchPage extends StatefulWidget {
   @override
