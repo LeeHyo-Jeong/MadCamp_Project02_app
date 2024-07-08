@@ -11,14 +11,15 @@ import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   final User user;
+  final GlobalKey<HomePageState> key;
 
-  const HomePage({super.key, required this.user});
+  const HomePage({required this.user, required this.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   List<Match> matches = [];
 
   @override
@@ -69,12 +70,8 @@ class _HomePageState extends State<HomePage> {
       );
 
       setState(() {
-        // match.cur_member = (match.cur_member ?? 0) + 1;
-        // match.match_members.add(widget.user);
         fetchMatches();
       });
-
-      //fetchMatches();
     }else{
       Fluttertoast.showToast(
         msg: '예약에 실패했습니다',
@@ -164,7 +161,14 @@ class _HomePageState extends State<HomePage> {
                     margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                     child: ListTile(
                       title: Text(match.matchTitle),
-                      subtitle: Text('${match.date} | ${match.time} | ${match.max_member} vs ${match.max_member}'),
+                      subtitle: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('${match.date} ${match.time}', style: TextStyle(fontSize: 13,)),
+                          Text('${match.max_member} vs ${match.max_member}'),
+                        ],
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -173,12 +177,18 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       },
-                      trailing: ElevatedButton(
-                        onPressed: (userReserved || (match.cur_member ?? 0) >= match.max_member) ? null : () => reserveMatch(match),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: getButtonColor(match)
-                        ),
-                        child: Text(getButtonLabel(match), style: TextStyle(color: Colors.white)),
+                      trailing: Column(
+                        children: [
+                          Text('${match.cur_member ?? 0} / ${match.max_member}'),
+                          ElevatedButton(
+                            onPressed: (userReserved || (match.cur_member ?? 0) >= match.max_member) ? null : () => reserveMatch(match),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: getButtonColor(match),
+
+                            ),
+                            child: Text(getButtonLabel(match), style: TextStyle(color: Colors.white)),
+                          ),
+                        ],
                       )
                     ),
                   );

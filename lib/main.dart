@@ -55,9 +55,19 @@ class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   bool _dialogShown = false;
 
+  final List<Widget> _pages = [];
+  final GlobalKey<HomePageState> _homePageKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
+
+    _pages.addAll([
+      HomePage(key: _homePageKey, user: widget.user),
+      ReservationPage(),
+      Profilepage()
+    ]);
+
     if (widget.isFirstLogin && !_dialogShown) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         _dialogShown = true;
@@ -92,7 +102,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void _onItemTapped(int index) {
+  void _onItemTapped(int index){
+    if(index == 0){
+      _homePageKey.currentState?.fetchMatches();
+    }
     setState(() {
       _selectedIndex = index;
     });
@@ -101,26 +114,27 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: IndexedStack(
         index: _selectedIndex,
-        children: [
-          HomePage(user: widget.user),
-          ReservationPage(),
-          Profilepage(),
-        ],
+        children: _pages,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         type: BottomNavigationBarType.shifting,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
+            backgroundColor: Colors.white,
             icon: Icon(Icons.home),
             label: '홈',
           ),
           BottomNavigationBarItem(
+            backgroundColor: Colors.white,
             icon: Icon(Icons.history),
             label: '내 경기',
           ),
           BottomNavigationBarItem(
+            backgroundColor: Colors.white,
             icon: Icon(Icons.portrait),
             label: '프로필',
           ),
