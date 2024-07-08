@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'match.dart';
 import 'package:http/http.dart' as http;
 import 'match_detail.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 // 예약한 경기 목록을 가져오는 함수
 Future<List<Match>> getUserReservations(String userId) async {
@@ -53,6 +55,8 @@ class ReservationPage extends StatefulWidget {
 
 class ReservationPageState extends State<ReservationPage> {
   late Future<List<Match>> futureReservations;
+  DateTime _selectedDay = DateTime.now();
+  Map<DateTime, List<Match>> _groupedReservations = {};
 
   @override
   void initState() {
@@ -64,6 +68,23 @@ class ReservationPageState extends State<ReservationPage> {
     setState(() {
       futureReservations = getUserReservations(widget.user.id.toString());
     });
+  }
+
+  List<Match> _getEventsForDay(DateTime day) {
+    return _groupedReservations[DateTime(day.year, day.month, day.day)] ?? [];
+  }
+
+  void _groupReservationsByDate(List<Match> reservations) {
+    _groupedReservations.clear();
+    for (var reservation in reservations) {
+      // Adjust the date format parsing to match your date strings
+      final date = DateFormat('yyyy년 MM월 dd일').parse(reservation.date);
+      final formattedDate = DateTime(date.year, date.month, date.day);
+      if (_groupedReservations[formattedDate] == null) {
+        _groupedReservations[formattedDate] = [];
+      }
+      _groupedReservations[formattedDate]!.add(reservation);
+    }
   }
 
   @override
@@ -107,51 +128,152 @@ class ReservationPageState extends State<ReservationPage> {
             return Center(child: Text('No reservations found'));
           } else {
             final reservations = snapshot.data!;
-            return ListView.builder(
-              itemCount: reservations.length,
-              itemBuilder: (context, index) {
-                final reservation = reservations[index];
-                return Card(
-                  color: Colors.white70,
-                  elevation: 4,
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  child: ListTile(
-                    title: Text(reservation.matchTitle),
-                    subtitle: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('${reservation.date} ${reservation.time}', style: TextStyle(fontSize: 13,)),
-                        Text('${reservation.max_member} vs ${reservation.max_member}'),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MatchDetailPage(match: reservation),
+            _groupReservationsByDate(reservations);
+            final todayReservations = _getEventsForDay(_selectedDay);
+            final otherReservations = reservations
+                .where((match) =>
+            DateFormat('yyyy년 MM월 dd일').parse(match.date) != _selectedDay)
+                .toList();
+
+            return Column(
+              children: [
+                TableCalendar(
+                  firstDay: DateTime.utc(2020, 1, 1),
+                  lastDay: DateTime.utc(2030, 12, 31),
+                  focusedDay: _selectedDay,
+                  selectedDayPredicate: (day) {
+                    return isSameDay(_selectedDay, day);
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                    });
+                  },
+                  eventLoader: _getEventsForDay,
+                ),
+                Expanded(
+                  child: ListView(
+                    children: [
+                      if (todayReservations.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text('오늘의 경기',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold)),
                         ),
-                      ).then((_) => fetchReservations()); // Detail 페이지에서 돌아오면 목록 갱신
-                    },
-                    trailing: Column(
-                      children: [
-                        Text('${reservation.cur_member ?? 0} / ${reservation.max_member}'),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await cancelReservation(
-                                reservation.matchId.toString(), widget.user.id.toString());
-                            fetchReservations();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
+                      ...todayReservations.map((reservation) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.blue,
+                              width: 2.0,
+                            ),
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                          child: Text('예약 취소', style: TextStyle(color: Colors.white)),
-                        ),
-                      ],
-                    ),
+                          margin: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          child: ListTile(
+                            title: Text(reservation.matchTitle),
+                            subtitle: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('${reservation.date} ${reservation.time}',
+                                    style: TextStyle(fontSize: 13)),
+                                Text(
+                                    '${reservation.max_member} vs ${reservation.max_member}'),
+                              ],
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MatchDetailPage(match: reservation),
+                                ),
+                              ).then((_) => fetchReservations()); // Detail 페이지에서 돌아오면 목록 갱신
+                            },
+                            trailing: Column(
+                              children: [
+                                Text(
+                                    '${reservation.cur_member ?? 0} / ${reservation.max_member}'),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    await cancelReservation(
+                                        reservation.matchId.toString(),
+                                        widget.user.id.toString());
+                                    fetchReservations();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  child: Text('예약 취소',
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('전체 경기 목록',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                      ),
+                      ...otherReservations.map((reservation) {
+                        return Card(
+                          color: Colors.white70,
+                          elevation: 4,
+                          margin: EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          child: ListTile(
+                            title: Text(reservation.matchTitle),
+                            subtitle: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('${reservation.date} ${reservation.time}',
+                                    style: TextStyle(fontSize: 13)),
+                                Text(
+                                    '${reservation.max_member} vs ${reservation.max_member}'),
+                              ],
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      MatchDetailPage(match: reservation),
+                                ),
+                              ).then((_) => fetchReservations()); // Detail 페이지에서 돌아오면 목록 갱신
+                            },
+                            trailing: Column(
+                              children: [
+                                Text(
+                                    '${reservation.cur_member ?? 0} / ${reservation.max_member}'),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    await cancelReservation(
+                                        reservation.matchId.toString(),
+                                        widget.user.id.toString());
+                                    fetchReservations();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                  child: Text('예약 취소',
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ],
                   ),
-                );
-              },
+                ),
+              ],
             );
           }
         },
