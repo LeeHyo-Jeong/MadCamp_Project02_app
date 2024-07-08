@@ -5,12 +5,14 @@ import 'package:intl/intl.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'match.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'match_detail.dart';
+
+String? ip = dotenv.env['ip'];
 
 // 예약한 경기 목록을 가져오는 함수
 Future<List<Match>> getUserReservations(String userId) async {
-  final url = Uri.parse('http://localhost:3000/api/user/$userId/reservations');
+  final url = Uri.parse('http://${ip}:3000/api/user/$userId/reservations');
   print("Fetching reservations for user: $userId"); // 디버그 로그 추가
   final response = await http.get(url);
 
@@ -26,7 +28,7 @@ Future<List<Match>> getUserReservations(String userId) async {
 }
 
 Future<void> addReservation(String matchId, String userId) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$matchId/reserve');
+  final url = Uri.parse('http://${ip}:3000/api/match/$matchId/reserve');
 
   final response = await http.post(
     url,
@@ -46,7 +48,7 @@ Future<void> addReservation(String matchId, String userId) async {
 }
 
 Future<void> cancelReservation(String matchId, String userId) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$matchId/cancel');
+  final url = Uri.parse('http://${ip}:3000/api/match/$matchId/cancel');
 
   final response = await http.post(
     url,
