@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _pages.addAll([
       HomePage(key: _homePageKey, user: widget.user),
-      ReservationPage(),
+      ReservationPage(user: widget.user),
       Profilepage()
     ]);
 

@@ -6,6 +6,8 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'match.dart';
 import 'package:http/http.dart' as http;
 
+import 'match_detail.dart';
+
 // 예약한 경기 목록을 가져오는 함수
 Future<List<Match>> getUserReservations(String userId) async {
   final url = Uri.parse('http://localhost:3000/api/user/$userId/reservations');
@@ -78,6 +80,7 @@ class _ReservationPageState extends State<ReservationPage> {
   void initState() {
     super.initState();
     user = widget.user;
+    //fetchmatches();
   }
 
   @override
@@ -128,12 +131,34 @@ class _ReservationPageState extends State<ReservationPage> {
                 //final dateTime = DateFormat('yyyy-MM-dd HH:mm').parse('${reservation.date} ${reservation.time}');
                 //final formattedDateTime =
                 //DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
-
                 return Card(
+                  color: Colors.white70,
+                  elevation: 4,
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   child: ListTile(
                     title: Text(reservation.matchTitle),
-                    //subtitle: Text(formattedDateTime),
-                    trailing: ElevatedButton(
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('${reservation.date} ${reservation.time}', style: TextStyle(fontSize: 13,)),
+                        Text('${reservation.max_member} vs ${reservation.max_member}'),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MatchDetailPage(match: reservation),
+                        ),
+                      );
+                      //fetchMatches();
+
+                    },
+                    trailing: Column(
+                        children: [
+                    Text('${reservation.cur_member ?? 0} / ${reservation.max_member}'),
+                    ElevatedButton(
                       onPressed: () async {
                         await cancelReservation(
                             reservation.matchId.toString(), user.id.toString());
@@ -141,9 +166,15 @@ class _ReservationPageState extends State<ReservationPage> {
                           reservations.removeAt(index);
                         });
                       },
-                      child: Text('예약 취소'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+
+                      ),
+                      child: Text('예약 취소', style: TextStyle(color: Colors.white)),
                     ),
+                  ],
                   ),
+                )
                 );
               },
             );

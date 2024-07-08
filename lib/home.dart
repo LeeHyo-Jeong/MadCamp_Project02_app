@@ -177,11 +177,7 @@ class HomePageState extends State<HomePage> {
                           ),
                         );
                         fetchMatches();
-                        if (result != null) {
-                          setState(() {
-                            fetchMatches();
-                          });
-                        }
+
                       },
                       trailing: Column(
                         children: [
