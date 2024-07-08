@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _checkLoginStatus();
   }
 
-  Future<void> _checkLoginStatus() async {
+  Future<void> _checkLoginStatus() async {// 사용자가 로그인한 상태인지 확인
     OAuthToken? token = await TokenManagerProvider.instance.manager.getToken();
 
     if (token != null) {
