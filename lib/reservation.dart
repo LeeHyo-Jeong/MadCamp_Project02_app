@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'dart:convert';
-import 'package:intl/intl.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'match.dart';
 import 'package:http/http.dart' as http;
-
 import 'match_detail.dart';
 
 // 예약한 경기 목록을 가져오는 함수
@@ -22,26 +20,6 @@ Future<List<Match>> getUserReservations(String userId) async {
     return reservations;
   } else {
     throw Exception("Failed to fetch reservations: ${response.statusCode}");
-  }
-}
-
-Future<void> addReservation(String matchId, String userId) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$matchId/reserve');
-
-  final response = await http.post(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'userId': userId,
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    print("Reservation added successfully");
-  } else {
-    print("Failed to add reservation: ${response.statusCode}");
   }
 }
 
@@ -70,22 +48,27 @@ class ReservationPage extends StatefulWidget {
   const ReservationPage({super.key, required this.user});
 
   @override
-  State<ReservationPage> createState() => _ReservationPageState();
+  State<ReservationPage> createState() => ReservationPageState();
 }
 
-class _ReservationPageState extends State<ReservationPage> {
-  late User user;
+class ReservationPageState extends State<ReservationPage> {
+  late Future<List<Match>> futureReservations;
 
   @override
   void initState() {
     super.initState();
-    user = widget.user;
-    //fetchmatches();
+    fetchReservations();
+  }
+
+  void fetchReservations() {
+    setState(() {
+      futureReservations = getUserReservations(widget.user.id.toString());
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    String? profileImageUrl = user.kakaoAccount?.profile?.profileImageUrl;
+    String? profileImageUrl = widget.user.kakaoAccount?.profile?.profileImageUrl;
 
     return Scaffold(
       appBar: AppBar(
@@ -108,13 +91,13 @@ class _ReservationPageState extends State<ReservationPage> {
               ),
             ),
             SizedBox(width: 10),
-            Text("안녕하세요, ${user.kakaoAccount?.profile?.nickname}님"),
+            Text("안녕하세요, ${widget.user.kakaoAccount?.profile?.nickname}님"),
           ],
         ),
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<List<Match>>(
-        future: getUserReservations(user.id.toString()),
+        future: futureReservations,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: SpinKitChasingDots(color: Colors.black38));
@@ -128,9 +111,6 @@ class _ReservationPageState extends State<ReservationPage> {
               itemCount: reservations.length,
               itemBuilder: (context, index) {
                 final reservation = reservations[index];
-                //final dateTime = DateFormat('yyyy-MM-dd HH:mm').parse('${reservation.date} ${reservation.time}');
-                //final formattedDateTime =
-                //DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
                 return Card(
                   color: Colors.white70,
                   elevation: 4,
@@ -151,30 +131,25 @@ class _ReservationPageState extends State<ReservationPage> {
                         MaterialPageRoute(
                           builder: (context) => MatchDetailPage(match: reservation),
                         ),
-                      );
-                      //fetchMatches();
-
+                      ).then((_) => fetchReservations()); // Detail 페이지에서 돌아오면 목록 갱신
                     },
                     trailing: Column(
-                        children: [
-                    Text('${reservation.cur_member ?? 0} / ${reservation.max_member}'),
-                    ElevatedButton(
-                      onPressed: () async {
-                        await cancelReservation(
-                            reservation.matchId.toString(), user.id.toString());
-                        setState(() {
-                          reservations.removeAt(index);
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-
-                      ),
-                      child: Text('예약 취소', style: TextStyle(color: Colors.white)),
+                      children: [
+                        Text('${reservation.cur_member ?? 0} / ${reservation.max_member}'),
+                        ElevatedButton(
+                          onPressed: () async {
+                            await cancelReservation(
+                                reservation.matchId.toString(), widget.user.id.toString());
+                            fetchReservations();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                          child: Text('예약 취소', style: TextStyle(color: Colors.white)),
+                        ),
+                      ],
                     ),
-                  ],
                   ),
-                )
                 );
               },
             );

@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakaotest/match.dart';
@@ -50,13 +49,13 @@ class HomePageState extends State<HomePage> {
 
     final url = Uri.parse("http://localhost:3000/api/match/${match.matchId}/reserve");
     final response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'userId': widget.user.id.toString(),
-      })
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, String>{
+          'userId': widget.user.id.toString(),
+        })
     );
 
     if(response.statusCode == 200){
@@ -96,13 +95,14 @@ class HomePageState extends State<HomePage> {
     } return '예약';
   }
 
-   Color getButtonColor(Match match){
+  Color getButtonColor(Match match){
     if((match.cur_member ?? 0) >= match.max_member){
       return Colors.grey;
     } else if(isUserReserved(match)){
       return Colors.green;
     } return Colors.blue;
   }
+
   @override
   Widget build(BuildContext context) {
     User user = widget.user;
@@ -175,9 +175,7 @@ class HomePageState extends State<HomePage> {
                           MaterialPageRoute(
                             builder: (context) => MatchDetailPage(match: match),
                           ),
-                        );
-                        fetchMatches();
-
+                        ).then((_) => fetchMatches()); // Detail 페이지에서 돌아오면 목록 갱신
                       },
                       trailing: Column(
                         children: [
@@ -186,12 +184,11 @@ class HomePageState extends State<HomePage> {
                             onPressed: (userReserved || (match.cur_member ?? 0) >= match.max_member) ? null : () => reserveMatch(match),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: getButtonColor(match),
-
                             ),
                             child: Text(getButtonLabel(match), style: TextStyle(color: Colors.white)),
                           ),
                         ],
-                      )
+                      ),
                     ),
                   );
                 },
@@ -203,7 +200,6 @@ class HomePageState extends State<HomePage> {
                     MaterialPageRoute(builder: (context) => PostMatchPage()),
                   );
                   if (newMatch != null) {
-                    setState(() {
                       Fluttertoast.showToast(
                         msg: '새 경기가 등록되었습니다',
                         toastLength: Toast.LENGTH_SHORT,
@@ -214,7 +210,6 @@ class HomePageState extends State<HomePage> {
                         textColor: Colors.white,
                       );
                       fetchMatches();
-                    });
                   }
                 },
                 label: Text("새 경기 등록하기", style: TextStyle(color: Colors.white)),
