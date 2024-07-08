@@ -1,11 +1,11 @@
-class Match{
+class Match {
   final int matchId;
   final String date;
   final String time;
   final String place;
   final String matchTitle;
   final String content;
-  final int max_member; // 한 팀에 몇명인지?
+  final int max_member;
   final String? image;
   final int level;
   final int? cur_member;
@@ -23,7 +23,7 @@ class Match{
     this.cur_member,
   });
 
-  factory Match.fromJson(Map<String, dynamic> json){// JSON 형태의 데이터를 Match 객체로 변환
+  factory Match.fromJson(Map<String, dynamic> json) {
     return Match(
       matchId: json['matchId'],
       date: json['date'],
@@ -34,8 +34,10 @@ class Match{
       max_member: json['max_member'],
       image: json['image'],
       level: json['level'],
+      cur_member: json['cur_member'],
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
       'matchId': matchId,

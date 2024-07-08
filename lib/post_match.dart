@@ -236,126 +236,126 @@ class _PostMatchPageState extends State<PostMatchPage> {
         shadowColor: Colors.black,
         color: Color(0xfff5f5f5),
         child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(labelText: '제목'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '모집글 제목을 입력 해 주세요';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _placeController,
-                decoration: InputDecoration(labelText: '경기 장소'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '경기 장소를 입력 해 주세요';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _dateController,
-                decoration: InputDecoration(
-                  labelText: '경기 날짜',
-                  hintText: 'yyyy년 MM월 dd일',
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: [
+                TextFormField(
+                  controller: _titleController,
+                  decoration: InputDecoration(labelText: '제목'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '모집글 제목을 입력 해 주세요';
+                    }
+                    return null;
+                  },
                 ),
-                onTap: () {
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                  _selectDate(context);
-                },
-                validator: (value) {
-                  if (_selectedDate == null) {
-                    return '경기 날짜를 선택 해 주세요';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _timeController,
-                decoration: InputDecoration(
-                  labelText: '경기 시간',
-                  hintText: 'HH시 mm분',
+                TextFormField(
+                  controller: _placeController,
+                  decoration: InputDecoration(labelText: '경기 장소'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '경기 장소를 입력 해 주세요';
+                    }
+                    return null;
+                  },
                 ),
-                onTap: () {
-                  FocusScope.of(context).requestFocus(new FocusNode());
-                  _selectTime(context);
-                },
-                validator: (value) {
-                  if (_selectedTime == null) {
-                    return '경기 시간을 선택 해 주세요';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _contentController,
-                decoration: InputDecoration(labelText: "내용"),
-                maxLines: 5,
-                validator: (value) {
-                  if(value == null || value.isEmpty){
-                    return "내용을 입력 해 주세요";
-                  }
-                  return null;
-                }
-              ),
-              DropdownButtonFormField<int>(
-                decoration: InputDecoration(labelText: '팀 인원 수'),
-                value: _selectedMemberCount,
-                items: _memberOptions.map((int value) {
-                  return DropdownMenuItem<int>(
-                    value: value,
-                    child: Text(value.toString()),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedMemberCount = newValue;
-                  });
-                },
-                validator: (value) {
-                  if (value == null) {
-                    return '팀의 인원 수를 입력 해 주세요';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _levelController,
-                decoration: InputDecoration(labelText: '축구 실력'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '축구 실력을 입력 해 주세요';
-                  }
-                  if (int.tryParse(value) == null) {
-                    return '실력은 1~10 사이의 수로 입력 해 주세요';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
+                TextFormField(
+                  controller: _dateController,
+                  decoration: InputDecoration(
+                    labelText: '경기 날짜',
+                    hintText: 'yyyy년 MM월 dd일',
+                  ),
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                    _selectDate(context);
+                  },
+                  validator: (value) {
+                    if (_selectedDate == null) {
+                      return '경기 날짜를 선택 해 주세요';
+                    }
+                    return null;
+                  },
                 ),
-                onPressed: _submitForm,
-                child: Text('등록',
-                style: TextStyle(
-                  color: Colors.white,
-                )),
-              ),
-            ],
+                TextFormField(
+                  controller: _timeController,
+                  decoration: InputDecoration(
+                    labelText: '경기 시간',
+                    hintText: 'HH시 mm분',
+                  ),
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                    _selectTime(context);
+                  },
+                  validator: (value) {
+                    if (_selectedTime == null) {
+                      return '경기 시간을 선택 해 주세요';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                    controller: _contentController,
+                    decoration: InputDecoration(labelText: "내용"),
+                    maxLines: 5,
+                    validator: (value) {
+                      if(value == null || value.isEmpty){
+                        return "내용을 입력 해 주세요";
+                      }
+                      return null;
+                    }
+                ),
+                DropdownButtonFormField<int>(
+                  decoration: InputDecoration(labelText: '팀 인원 수'),
+                  value: _selectedMemberCount,
+                  items: _memberOptions.map((int value) {
+                    return DropdownMenuItem<int>(
+                      value: value,
+                      child: Text(value.toString()),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedMemberCount = newValue;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return '팀의 인원 수를 입력 해 주세요';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: _levelController,
+                  decoration: InputDecoration(labelText: '축구 실력'),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '축구 실력을 입력 해 주세요';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return '실력은 1~10 사이의 수로 입력 해 주세요';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  onPressed: _submitForm,
+                  child: Text('등록',
+                      style: TextStyle(
+                        color: Colors.white,
+                      )),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),),
+        ),),
     );
   }
 }
