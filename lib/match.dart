@@ -1,3 +1,5 @@
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+
 class Match {
   final int matchId;
   final String date;
@@ -8,7 +10,8 @@ class Match {
   final int max_member;
   final String? image;
   final int level;
-  final int? cur_member;
+  int? cur_member;
+  List<String> match_members; //user_id의 list
 
   Match({
     required this.matchId,
@@ -21,9 +24,15 @@ class Match {
     this.image,
     required this.level,
     this.cur_member,
+    required this.match_members,
   });
 
   factory Match.fromJson(Map<String, dynamic> json) {
+    print('$json');
+    var userList = json['match_members'] as List;
+    List<String> match_members = userList.map((i) => i.toString()).toList();
+    print(match_members);
+
     return Match(
       matchId: json['matchId'],
       date: json['date'],
@@ -35,6 +44,7 @@ class Match {
       image: json['image'],
       level: json['level'],
       cur_member: json['cur_member'],
+      match_members: match_members,
     );
   }
 
@@ -50,6 +60,7 @@ class Match {
       'image': image,
       'level': level,
       'cur_member': cur_member,
+      'match_members': match_members,
     };
   }
 }

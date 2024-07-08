@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         if (result == true) {
           final response = await http.put(
-            Uri.parse('http://localhost:3000/api/update-first-login/${widget.user.id}'),
+            Uri.parse('http://localhost:3000/api/user-info'),
             headers: {
               'Content-Type': 'application/json',
             },

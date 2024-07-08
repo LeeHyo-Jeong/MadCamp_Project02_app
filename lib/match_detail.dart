@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kakaotest/match.dart';
-import 'home.dart';
 
 class MatchDetailPage extends StatefulWidget {
   final Match match;

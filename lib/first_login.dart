@@ -30,17 +30,14 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
 
       final response = await http.post(
         Uri.parse('http://localhost:3000/api/user-info'),
-        /*
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${widget.accessToken}'
         },
-         */
         body: jsonEncode({
-          'user_id': user.id,
+          'user_id': userId,
           'level': level,
           'team': team,
-          'user_id': userId,
         }),
       );
 

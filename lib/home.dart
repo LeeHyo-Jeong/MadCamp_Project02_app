@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:kakaotest/match.dart';
@@ -33,6 +34,78 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  Future<void> reserveMatch(Match match) async{
+    if((match.cur_member ?? 0) >= (match.max_member ?? double.infinity)){
+      Fluttertoast.showToast(
+        msg: '이미 예약이 마감 된 경기입니다',
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black54,
+        fontSize: 15.0,
+        textColor: Colors.white,
+      );
+      return;
+    }
+
+    final url = Uri.parse("http://localhost:3000/api/match/${match.matchId}/reserve");
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'userId': widget.user.id.toString(),
+      })
+    );
+
+    if(response.statusCode == 200){
+      Fluttertoast.showToast(
+        msg: '예약 되었습니다',
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black54,
+        fontSize: 15.0,
+        textColor: Colors.white,
+      );
+
+      setState(() {
+        // match.cur_member = (match.cur_member ?? 0) + 1;
+        // match.match_members.add(widget.user);
+        fetchMatches();
+      });
+
+      //fetchMatches();
+    }else{
+      Fluttertoast.showToast(
+        msg: '예약에 실패했습니다',
+        toastLength: Toast.LENGTH_SHORT,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black54,
+        fontSize: 15.0,
+        textColor: Colors.white,
+      );
+    }
+  }
+
+  bool isUserReserved(Match match){
+    return match.match_members.any((member) => member == widget.user.id.toString());
+  }
+
+  String getButtonLabel(Match match){
+    if((match.cur_member ?? 0) >= match.max_member){
+      return '모집 완료';
+    } else if(isUserReserved(match)){
+      return '예약 완료';
+    } return '예약';
+  }
+
+   Color getButtonColor(Match match){
+    if((match.cur_member ?? 0) >= match.max_member){
+      return Colors.grey;
+    } else if(isUserReserved(match)){
+      return Colors.green;
+    } return Colors.blue;
+  }
   @override
   Widget build(BuildContext context) {
     User user = widget.user;
@@ -84,6 +157,7 @@ class _HomePageState extends State<HomePage> {
                 itemCount: matches.length,
                 itemBuilder: (context, index) {
                   Match match = matches[index];
+                  bool userReserved = isUserReserved(match);
                   return Card(
                     color: Colors.white70,
                     elevation: 4,
@@ -99,6 +173,13 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       },
+                      trailing: ElevatedButton(
+                        onPressed: (userReserved || (match.cur_member ?? 0) >= match.max_member) ? null : () => reserveMatch(match),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: getButtonColor(match)
+                        ),
+                        child: Text(getButtonLabel(match), style: TextStyle(color: Colors.white)),
+                      )
                     ),
                   );
                 },
@@ -120,6 +201,7 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 15.0,
                         textColor: Colors.white,
                       );
+                      fetchMatches();
                     });
                   }
                 },
