@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 class FirstLoginInfoDialog extends StatefulWidget {
@@ -17,6 +18,7 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
   final User user;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _teamController = TextEditingController();
+  String? ip = dotenv.env['ip'];
 
   _FirstLoginInfoDialogState({required this.user});
   int? _selectedLevel;
@@ -29,7 +31,7 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
       final userId = user.id.toString();
 
       final response = await http.post(
-        Uri.parse('http://localhost:3000/api/user-info'),
+        Uri.parse('http://${ip}:3000/api/user-info'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${widget.accessToken}'

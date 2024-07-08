@@ -1,11 +1,16 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'match.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+String? ip = dotenv.env['ip'];
 
 Future<void> addMatch(Match match) async {
-  final url = Uri.parse('http://localhost:3000/api/match');
+  final url = Uri.parse('http://${ip}:3000/api/match');
 
   final response = await http.post(
     url,
@@ -23,7 +28,7 @@ Future<void> addMatch(Match match) async {
 }
 
 Future<Match> getMatch(String id) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$id');
+  final url = Uri.parse('http://${ip}:3000/api/match/$id');
 
   final response = await http.get(url);
 
@@ -35,24 +40,25 @@ Future<Match> getMatch(String id) async {
     throw Exception("Failed to fetch match: ${response.statusCode}");
   }
 }
+
 Future<List<Match>> getAllMatches() async {
-  final url = Uri.parse('http://localhost:3000/api/match');
+  final url = Uri.parse('http://${ip}:3000/api/match');
 
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
     final List<dynamic> matchesData = jsonDecode(response.body);
-    final List<Match> matches = matchesData.map((data) => Match.fromJson(data))
-        .toList();
+    final List<Match> matches =
+        matchesData.map((data) => Match.fromJson(data)).toList();
     //print("Matches data: ${matches.map((match) => match.toJson())}");
     return matches;
-  }else {
-    throw Exception("Failed to fetch matches: ${response.statusCode}");  }
+  } else {
+    throw Exception("Failed to fetch matches: ${response.statusCode}");
+  }
 }
 
-
 Future<void> updateMatch(String id, Match match) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$id');
+  final url = Uri.parse('http://${ip}:3000/api/match/$id');
 
   final response = await http.put(
     url,
@@ -70,7 +76,7 @@ Future<void> updateMatch(String id, Match match) async {
 }
 
 Future<void> deleteMatch(String id) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$id');
+  final url = Uri.parse('http://${ip}:3000/api/match/$id');
 
   final response = await http.delete(url);
 
@@ -80,7 +86,6 @@ Future<void> deleteMatch(String id) async {
     print("Failed to delete match: ${response.statusCode}");
   }
 }
-
 
 class PostMatchPage extends StatefulWidget {
   @override
@@ -95,14 +100,55 @@ class _PostMatchPageState extends State<PostMatchPage> {
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _levelController = TextEditingController();
+  File? _image;
 
   String? _selectedDate;
   String? _selectedTime;
   int? _selectedMemberCount;
   final List<int> _memberOptions = [6, 7, 8, 9, 10, 11, 12];
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate() && _selectedDate != null && _selectedTime != null && _selectedMemberCount != null) {
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      }
+    });
+  }
+
+  Future<String?> _uploadImage(File imageFile) async {
+    final uri = Uri.parse('http://${ip}:3000/api/upload');
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      final responseData = await response.stream.bytesToString();
+      final data = json.decode(responseData);
+
+      print("Image data: ${data}");
+
+      return data['image'];
+    } else {
+      print("Image upload failed with status ${response.statusCode}");
+      return null;
+    }
+  }
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate() &&
+        _selectedDate != null &&
+        _selectedTime != null &&
+        _selectedMemberCount != null) {
+      String? imageUrl;
+
+      if (_image != null) {
+        imageUrl = await _uploadImage(_image!);
+      }
+
       final newMatch = Match(
         matchId: DateTime.now().millisecondsSinceEpoch,
         date: _selectedDate!,
@@ -113,6 +159,7 @@ class _PostMatchPageState extends State<PostMatchPage> {
         max_member: _selectedMemberCount!,
         level: int.parse(_levelController.text),
         match_members: [],
+        image: imageUrl,
       );
       addMatch(newMatch);
       Navigator.pop(context, newMatch);
@@ -142,7 +189,8 @@ class _PostMatchPageState extends State<PostMatchPage> {
     if (picked != null) {
       setState(() {
         final now = DateTime.now();
-        final selectedDateTime = DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+        final selectedDateTime =
+            DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
         _selectedTime = DateFormat("HH시 mm분").format(selectedDateTime);
         _timeController.text = _selectedTime!;
       });
@@ -226,12 +274,11 @@ class _PostMatchPageState extends State<PostMatchPage> {
                     decoration: InputDecoration(labelText: "내용"),
                     maxLines: 5,
                     validator: (value) {
-                      if(value == null || value.isEmpty){
+                      if (value == null || value.isEmpty) {
                         return "내용을 입력 해 주세요";
                       }
                       return null;
-                    }
-                ),
+                    }),
                 DropdownButtonFormField<int>(
                   decoration: InputDecoration(labelText: '팀 인원 수'),
                   value: _selectedMemberCount,
@@ -267,7 +314,16 @@ class _PostMatchPageState extends State<PostMatchPage> {
                     return null;
                   },
                 ),
+                _image != null ? Image.file(_image!) : Container(),
                 SizedBox(height: 20),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                  ),
+                  onPressed: _pickImage,
+                  child: Text("이미지 선택", style: TextStyle(color: Colors.white)),
+                ),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
@@ -281,7 +337,8 @@ class _PostMatchPageState extends State<PostMatchPage> {
               ],
             ),
           ),
-        ),),
+        ),
+      ),
     );
   }
 }

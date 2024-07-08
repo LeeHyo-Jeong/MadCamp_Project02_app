@@ -5,6 +5,7 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakaotest/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,7 +19,8 @@ class _LoginPageState extends State<LoginPage> {
   bool isFirstLogin = false;
 
   Future<void> sendUserInfoToBackend(String accessToken, User user) async {
-    final url = Uri.parse('http://localhost:3000/api/login');
+    String? ip = dotenv.env['ip'];
+    final url = Uri.parse('http://${ip}:3000/api/login');
 
     final response = await http.post(
       url,
