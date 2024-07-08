@@ -51,6 +51,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
   bool _dialogShown = false;
+  String? ip = dotenv.env['ip'];
 
   final GlobalKey<HomePageState> _homePageKey = GlobalKey<HomePageState>();
   final GlobalKey<ReservationPageState> _reservationPageKey = GlobalKey<ReservationPageState>();
@@ -77,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         if (result == true) {
           final response = await http.put(
-            Uri.parse('http://localhost:3000/api/user-info'),
+            Uri.parse('http://${ip}:3000/api/user-info'),
             headers: {
               'Content-Type': 'application/json',
             },

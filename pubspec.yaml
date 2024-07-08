@@ -43,6 +43,8 @@ dependencies:
   intl: ^0.19.0
   flutter_spinkit: ^5.2.1
   fluttertoast: ^8.2.6
+  image_picker: ^1.1.2
+  permission_handler: ^11.3.1
   table_calendar: ^3.0.0
 
   # The following adds the Cupertino Icons font to your application.
