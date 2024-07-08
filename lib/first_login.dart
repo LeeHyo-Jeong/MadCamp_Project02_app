@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-
 class FirstLoginInfoDialog extends StatefulWidget {
   final String accessToken;
   final User user;
@@ -20,7 +19,6 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
   final TextEditingController _teamController = TextEditingController();
 
   _FirstLoginInfoDialogState({required this.user});
-
   int? _selectedLevel;
   final List<int> _levelOptions = [1, 2, 3, 4, 5];
 
@@ -32,11 +30,14 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
 
       final response = await http.post(
         Uri.parse('http://localhost:3000/api/user-info'),
+        /*
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${widget.accessToken}'
         },
+         */
         body: jsonEncode({
+          'user_id': user.id,
           'level': level,
           'team': team,
           'user_id': userId,
