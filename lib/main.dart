@@ -10,6 +10,7 @@ import 'package:kakaotest/first_login.dart'; // FirstLoginInfoDialog 가져오�
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart'; // Fluttertoast 패키지 추가
 import 'package:http/http.dart' as http; // http 패키지 추가
+import 'package:kakaotest/home.dart';
 
 void main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -95,6 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+      fetchMatches();
     });
   }
 

@@ -165,13 +165,19 @@ class _HomePageState extends State<HomePage> {
                     child: ListTile(
                       title: Text(match.matchTitle),
                       subtitle: Text('${match.date} | ${match.time} | ${match.max_member} vs ${match.max_member}'),
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        final result=await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => MatchDetailPage(match: match),
                           ),
                         );
+                        fetchMatches();
+                        if (result != null) {
+                          setState(() {
+                            fetchMatches();
+                          });
+                        }
                       },
                       trailing: ElevatedButton(
                         onPressed: (userReserved || (match.cur_member ?? 0) >= match.max_member) ? null : () => reserveMatch(match),

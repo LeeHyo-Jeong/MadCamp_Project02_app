@@ -125,15 +125,14 @@ class _ReservationPageState extends State<ReservationPage> {
               itemCount: reservations.length,
               itemBuilder: (context, index) {
                 final reservation = reservations[index];
-                final dateTime = DateFormat('yyyy-MM-dd HH:mm')
-                    .parse('${reservation.date} ${reservation.time}');
-                final formattedDateTime =
-                DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
+                //final dateTime = DateFormat('yyyy-MM-dd HH:mm').parse('${reservation.date} ${reservation.time}');
+                //final formattedDateTime =
+                //DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
 
                 return Card(
                   child: ListTile(
                     title: Text(reservation.matchTitle),
-                    subtitle: Text(formattedDateTime),
+                    //subtitle: Text(formattedDateTime),
                     trailing: ElevatedButton(
                       onPressed: () async {
                         await cancelReservation(

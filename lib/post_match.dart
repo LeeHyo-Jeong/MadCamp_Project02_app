@@ -82,26 +82,6 @@ Future<void> deleteMatch(String id) async {
 }
 
 
-/*
-Future<void> partialUpdateMatch(String id, Map<String, dynamic> matchData) async {
-  final url = Uri.parse('http://localhost:3000/api/match/$id');
-
-  final response = await http.patch(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(matchData),
-  );
-
-  if (response.statusCode == 200) {
-    print("Match successfully partially updated");
-  } else {
-    print("Failed to partially update match: ${response.statusCode}");
-  }
-}
-*/
-
 class PostMatchPage extends StatefulWidget {
   @override
   _PostMatchPageState createState() => _PostMatchPageState();
