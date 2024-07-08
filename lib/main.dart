@@ -65,6 +65,29 @@ class _MyHomePageState extends State<MyHomePage> {
           context: context,
           builder: (context) => FirstLoginInfoDialog(accessToken: 'token', user: widget.user),
         );
+
+        if (result == true) {
+          final response = await http.put(
+            Uri.parse('http://localhost:3000/api/user-info'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          );
+
+          if (response.statusCode == 200) {
+            Fluttertoast.showToast(
+              msg: 'First login info submitted',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: Colors.black54,
+              fontSize: 15.0,
+              textColor: Colors.white,
+            );
+          } else {
+            print('Failed to update isFirstLogin');
+          }
+        }
       });
     }
   }

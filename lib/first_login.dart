@@ -35,7 +35,7 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
           'Authorization': 'Bearer ${widget.accessToken}'
         },
         body: jsonEncode({
-          'user_id': user.id,
+          'user_id': userId,
           'level': level,
           'team': team,
         }),

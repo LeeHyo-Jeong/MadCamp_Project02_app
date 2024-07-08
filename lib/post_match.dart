@@ -132,6 +132,7 @@ class _PostMatchPageState extends State<PostMatchPage> {
         content: _contentController.text,
         max_member: _selectedMemberCount!,
         level: int.parse(_levelController.text),
+        match_members: [],
       );
       addMatch(newMatch);
       Navigator.pop(context, newMatch);
