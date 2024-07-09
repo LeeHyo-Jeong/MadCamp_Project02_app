@@ -4,14 +4,17 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+
 class FirstLoginInfoDialog extends StatefulWidget {
   final String accessToken;
   final User user;
 
-  const FirstLoginInfoDialog({super.key, required this.accessToken, required this.user});
+  const FirstLoginInfoDialog(
+      {super.key, required this.accessToken, required this.user});
 
   @override
-  State<FirstLoginInfoDialog> createState() => _FirstLoginInfoDialogState(user: user);
+  State<FirstLoginInfoDialog> createState() =>
+      _FirstLoginInfoDialogState(user: user);
 }
 
 class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
@@ -21,13 +24,15 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
   String? ip = dotenv.env['ip'];
 
   _FirstLoginInfoDialogState({required this.user});
+
   int? _selectedLevel;
   final List<int> _levelOptions = [1, 2, 3, 4, 5];
 
-  Future<void> _submitForm() async{
-    if(_formKey.currentState!.validate()) {
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
       final level = _selectedLevel;
-      final team = _teamController.text.isNotEmpty ? _teamController.text : '무소속';
+      final team =
+          _teamController.text.isNotEmpty ? _teamController.text : '무소속';
       final userId = user.id.toString();
 
       final response = await http.post(
@@ -44,55 +49,62 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
       );
       print(response.statusCode);
       print('Response body: ${response.body}');
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         Navigator.pop(context, true);
-      } else{
+      } else {
         print('Failed to save user info');
       }
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Colors.white,
       title: Text('정보를 입력하세요'),
       content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DropdownButtonFormField<int>(
-              decoration: InputDecoration(labelText: '당신의 축구 실력은 어느 정도 인가요?'),
-              value: _selectedLevel,
-              items: _levelOptions.map((int value){
-                return DropdownMenuItem<int>(
-                  value: value,
-                  child: Text(value.toString()),
-                );
-              }).toList(),
-              onChanged: (newValue){
-                setState(() {
-                  _selectedLevel = newValue;
-                });
-              },
-              validator: (value){
-                if(value == null){
-                  return '축구 실력을 선택 해 주세요';
-                }
-                return null;
-              }
-            ),
-            TextFormField(
-              controller: _teamController,
-              decoration: InputDecoration(labelText: "소속 팀 이름을 입력 해 주세요"),
-            ),
-          ],
-        )
-      ),
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<int>(
+                  dropdownColor: Colors.white,
+                  decoration: InputDecoration(
+                      labelText: '당신의 축구 실력은 어느 정도 인가요?',
+                      filled: true,
+                      fillColor: Colors.white),
+                  value: _selectedLevel,
+                  items: _levelOptions.map((int value) {
+                    return DropdownMenuItem<int>(
+                      value: value,
+                      child: Text(value.toString()),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() {
+                      _selectedLevel = newValue;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return '축구 실력을 선택 해 주세요';
+                    }
+                    return null;
+                  }),
+              TextFormField(
+                controller: _teamController,
+                decoration: InputDecoration(
+                    labelText: "소속 팀 이름을 입력 해 주세요",
+                    filled: true,
+                    fillColor: Colors.white),
+              ),
+            ],
+          )),
       actions: [
-        ElevatedButton(onPressed: _submitForm, child: Text('제출'))
+        ElevatedButton(
+            onPressed: _submitForm,
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
+            child: Text('제출', style: TextStyle(color: Colors.white)))
       ],
     );
   }

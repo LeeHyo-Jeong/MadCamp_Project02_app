@@ -59,6 +59,8 @@ class HomePageState extends State<HomePage> {
           'userId': widget.user.id.toString(),
         }));
 
+    print("reserveMatch executed");
+
     if (response.statusCode == 200) {
       Fluttertoast.showToast(
         msg: '예약 되었습니다',
@@ -69,7 +71,55 @@ class HomePageState extends State<HomePage> {
         textColor: Colors.white,
       );
 
-      setState(() {
+      setState(() {  Future<void> reserveMatch(Match match) async {
+        if ((match.cur_member ?? 0) >= (match.max_member ?? double.infinity)) {
+          Fluttertoast.showToast(
+            msg: '이미 예약이 마감 된 경기입니다',
+            toastLength: Toast.LENGTH_SHORT,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black54,
+            fontSize: 15.0,
+            textColor: Colors.white,
+          );
+          return;
+        }
+
+        final url =
+        Uri.parse("http://${ip}:3000/api/match/${match.matchId}/reserve");
+        final response = await http.post(url,
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(<String, String>{
+              'userId': widget.user.id.toString(),
+            }));
+
+        print("reserveMatch executed");
+
+        if (response.statusCode == 200) {
+          Fluttertoast.showToast(
+            msg: '예약 되었습니다',
+            toastLength: Toast.LENGTH_SHORT,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black54,
+            fontSize: 15.0,
+            textColor: Colors.white,
+          );
+
+          setState(() {
+            fetchMatches();
+          });
+        } else {
+          Fluttertoast.showToast(
+            msg: '예약에 실패했습니다',
+            toastLength: Toast.LENGTH_SHORT,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black54,
+            fontSize: 15.0,
+            textColor: Colors.white,
+          );
+        }
+      }
         fetchMatches();
       });
     } else {
@@ -191,7 +241,7 @@ class HomePageState extends State<HomePage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  MatchDetailPage(match: match, currentUserId: user.id.toString()),
+                                  MatchDetailPage(match: match, currentUserId: user.id.toString(), user: user),
                             ),
                           );
                           fetchMatches();
@@ -221,6 +271,9 @@ class HomePageState extends State<HomePage> {
                 },
               ),
               floatingActionButton: FloatingActionButton.extended(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
                 onPressed: () async {
                   final newMatch = await Navigator.push(
                     context,

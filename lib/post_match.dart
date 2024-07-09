@@ -174,6 +174,16 @@ class _PostMatchPageState extends State<PostMatchPage> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child){
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.white70,
+            colorScheme: ColorScheme.light(primary: Colors.black),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      }
     );
     if (picked != null) {
       setState(() {
@@ -187,6 +197,16 @@ class _PostMatchPageState extends State<PostMatchPage> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child){
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.white70,
+            colorScheme: ColorScheme.light(primary: Colors.black),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      }
     );
     if (picked != null) {
       setState(() {
@@ -318,7 +338,6 @@ class _PostMatchPageState extends State<PostMatchPage> {
                 ),
                 _image != null ? Image.file(_image!) : Container(),
                 SizedBox(height: 20),
-                SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
@@ -326,6 +345,7 @@ class _PostMatchPageState extends State<PostMatchPage> {
                   onPressed: _pickImage,
                   child: Text("이미지 선택", style: TextStyle(color: Colors.white)),
                 ),
+                SizedBox(height: 10),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
