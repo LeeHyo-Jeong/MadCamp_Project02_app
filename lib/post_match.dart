@@ -45,7 +45,6 @@ Future<List<Match>> getAllMatches() async {
   final url = Uri.parse('http://${ip}:3000/api/match');
 
   final response = await http.get(url);
-
   if (response.statusCode == 200) {
     final List<dynamic> matchesData = jsonDecode(response.body);
     final List<Match> matches =

@@ -22,11 +22,26 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   List<Match> matches = [];
   String? ip = dotenv.env['ip'];
+  late Future<String> futureNickname;
 
   @override
   void initState() {
     super.initState();
+    futureNickname = fetchUsernickname(widget.user.id.toString());
     fetchMatches();
+  }
+
+  Future<String> fetchUsernickname(String userId) async {
+    final url = Uri.parse('http://$ip:3000/api/user/$userId');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> userdata = jsonDecode(response.body);
+      final String nickname = userdata['profile_nickname']; // 서버 응답에서 닉네임 추출
+      return nickname;
+    } else {
+      throw Exception('Failed to load user data');
+    }
   }
 
   Future<void> fetchMatches() async {
@@ -118,8 +133,8 @@ class HomePageState extends State<HomePage> {
         title: Text("홈"),
         automaticallyImplyLeading: false,
       ),
-      body: FutureBuilder<User>(
-        future: UserApi.instance.me(),
+      body: FutureBuilder<String>(
+        future: futureNickname,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: SpinKitChasingDots(color: Colors.black38));
@@ -151,7 +166,7 @@ class HomePageState extends State<HomePage> {
                             ),
                     ),
                     SizedBox(width: 10),
-                    Text("안녕하세요, ${user.kakaoAccount?.profile?.nickname}님"),
+                    Text("안녕하세요, ${snapshot.data}님"),
                   ],
                 ),
               ),

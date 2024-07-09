@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _pages = [
       HomePage(key: _homePageKey, user: widget.user),
       ReservationPage(key: _reservationPageKey, user: widget.user),
-      ProfilePage()
+      ProfilePage(user: widget.user)
     ];
 
     if (widget.isFirstLogin && !_dialogShown) {
