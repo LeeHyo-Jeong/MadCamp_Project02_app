@@ -76,88 +76,139 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 children: [
                   SizedBox(height: 20),
-                  ClipOval(
-                    child: profileImageUrl != null
-                        ? Image.network(
-                      profileImageUrl,
-                      fit: BoxFit.cover,
-                      width: 100,
-                      height: 100,
-                    )
-                        : Image.asset(
-                      'assets/football.png',
-                      fit: BoxFit.cover,
-                      width: 100,
-                      height: 100,
-                    ),
-                  ),
+                  _buildProfileHeader(profileImageUrl, userData),
                   SizedBox(height: 20),
-                  Text(
-                    "${userData['profile_nickname']}",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    "한 줄 소개: ${userData['memo']}",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    "레벨: ${userData['level']}",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 10),
-                  Text(
-                    "팀: ${userData['team']}",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _logout,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    child: Text(
-                      '로그아웃',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  SizedBox(height: 20),
+                  _buildProfileInfo(userData),
                   Divider(),
-                  ListTile(
-                    leading: Icon(Icons.edit),
-                    title: Text('개인 정보 수정'),
-                    onTap: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EditProfilePage(userData: userData)),
-                      );
-                      if (result == true) {
-                        setState(() {
-                          futureUserData = _fetchUserData();
-                        });
-                      }
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.notifications),
-                    title: Text('알림 설정'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => NotificationSettingsPage()),
-                      );
-                    },
-                  ),
+                  _buildProfileActions(userData),
                 ],
               ),
             );
           }
         },
       ),
+    );
+  }
+
+  Widget _buildProfileHeader(String? profileImageUrl, Map<String, dynamic> userData) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 16.0),
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            ClipOval(
+              child: profileImageUrl != null
+                  ? Image.network(
+                profileImageUrl,
+                fit: BoxFit.cover,
+                width: 100,
+                height: 100,
+              )
+                  : Image.asset(
+                'assets/football.png',
+                fit: BoxFit.cover,
+                width: 100,
+                height: 100,
+              ),
+            ),
+            SizedBox(width: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${userData['profile_nickname']}",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  "한 줄 소개: ${userData['memo']}",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileInfo(Map<String, dynamic> userData) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 16.0),
+      elevation: 4.0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildProfileInfoItem(Icons.star, "레벨: ${userData['level']}"),
+            Divider(),
+            _buildProfileInfoItem(Icons.group, "팀: ${userData['team']}"),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileInfoItem(IconData icon, String info) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.blue, size: 30),
+        SizedBox(width: 20),
+        Text(
+          info,
+          style: TextStyle(
+            fontSize: 18,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProfileActions(Map<String, dynamic> userData) {
+    return Column(
+      children: [
+        ListTile(
+          leading: Icon(Icons.edit),
+          title: Text('개인 정보 수정'),
+          onTap: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => EditProfilePage(userData: userData)),
+            );
+            if (result == true) {
+              setState(() {
+                futureUserData = _fetchUserData();
+              });
+            }
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.notifications),
+          title: Text('알림 설정'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => NotificationSettingsPage()),
+            );
+          },
+        ),
+        ListTile(
+          leading: Icon(Icons.logout),
+          title: Text('로그아웃'),
+          onTap: _logout,
+        ),
+      ],
     );
   }
 }
@@ -275,7 +326,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 class NotificationSettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // 알림 설정 페이지 구현
     return Scaffold(
       appBar: AppBar(
         title: Text('알림 설정'),

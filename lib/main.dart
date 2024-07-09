@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -103,15 +104,46 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future<void> fetchUserData() async {
+    try {
+      final response = await http.get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
+      print("response: ${response.body}");
+      if (response.statusCode == 200) {
+        final userData = jsonDecode(response.body);
+        _homePageKey.currentState?.updateUserData(userData);
+      } else {
+        throw Exception('Failed to load user data');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
       if (index == 1) {
         _reservationPageKey.currentState?.fetchReservations();
+        fetchUserDataForReservationPage();
       } else if (index == 0) {
         _homePageKey.currentState?.fetchMatches();
+        fetchUserData();
       }
     });
+  }
+  Future<void> fetchUserDataForReservationPage() async {
+    try {
+      final response = await http.get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
+      print("response: ${response.body}");
+      if (response.statusCode == 200) {
+        final userData = jsonDecode(response.body);
+        _reservationPageKey.currentState?.updateUserData(userData);
+      } else {
+        throw Exception('Failed to load user data');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
   }
 
   @override

@@ -22,11 +22,36 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   List<Match> matches = [];
   String? ip = dotenv.env['ip'];
+  Map<String, dynamic>? userData;
 
   @override
   void initState() {
     super.initState();
     fetchMatches();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    try {
+      final response = await http.get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
+      print("response: ${response.body}");
+      if (response.statusCode == 200) {
+        final userData = jsonDecode(response.body);
+        setState(() {
+          this.userData = userData;
+        });
+      } else {
+        throw Exception('Failed to load user data');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
+
+  void updateUserData(Map<String, dynamic> data) {
+    setState(() {
+      userData = data;
+    });
   }
 
   Future<void> fetchMatches() async {
@@ -49,7 +74,8 @@ class HomePageState extends State<HomePage> {
       return;
     }
 
-    final url = Uri.parse("http://${ip}:3000/api/match/${match.matchId}/reserve");
+    final url =
+    Uri.parse("http://${ip}:3000/api/match/${match.matchId}/reserve");
     final response = await http.post(url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -86,7 +112,8 @@ class HomePageState extends State<HomePage> {
   }
 
   bool isUserReserved(Match match) {
-    return match.match_members.any((member) => member == widget.user.id.toString());
+    return match.match_members
+        .any((member) => member == widget.user.id.toString());
   }
 
   String getButtonLabel(Match match) {
@@ -150,7 +177,7 @@ class HomePageState extends State<HomePage> {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Text("안녕하세요, ${user.kakaoAccount?.profile?.nickname}님"),
+                    Text("안녕하세요, ${userData!['profile_nickname']}님"),
                   ],
                 ),
               ),
