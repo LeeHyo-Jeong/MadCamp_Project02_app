@@ -213,7 +213,7 @@ class ReservationPageState extends State<ReservationPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      MatchDetailPage(match: reservation),
+                                      MatchDetailPage(match: reservation, currentUserId: widget.user.id.toString()),
                                 ),
                               ).then((_) => fetchReservations()); // Detail 페이지에서 돌아오면 목록 갱신
                             },
@@ -268,7 +268,7 @@ class ReservationPageState extends State<ReservationPage> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      MatchDetailPage(match: reservation),
+                                      MatchDetailPage(match: reservation, currentUserId: widget.user.id.toString()),
                                 ),
                               ).then((_) => fetchReservations()); // Detail 페이지에서 돌아오면 목록 갱신
                             },

@@ -186,12 +186,12 @@ class HomePageState extends State<HomePage> {
                             Text('${match.max_member} vs ${match.max_member}'),
                           ],
                         ),
-                        onTap: () {
-                          Navigator.push(
+                        onTap: () async {
+                          final deletedMatchId = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  MatchDetailPage(match: match),
+                                  MatchDetailPage(match: match, currentUserId: user.id.toString()),
                             ),
                           );
                           fetchMatches();
@@ -201,8 +201,8 @@ class HomePageState extends State<HomePage> {
                           children: [
                             Text(
                                 '${match.cur_member ?? 0} / ${match.max_member}'),
-                            SizedBox(
-                              height: 40,
+                            Expanded(
+                              //height: 40,
                               child: ElevatedButton(
                                   onPressed: (userReserved ||
                                           (match.cur_member ?? 0) >=
