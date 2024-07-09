@@ -22,26 +22,11 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   List<Match> matches = [];
   String? ip = dotenv.env['ip'];
-  late Future<String> futureNickname;
 
   @override
   void initState() {
     super.initState();
-    futureNickname = fetchUsernickname(widget.user.id.toString());
     fetchMatches();
-  }
-
-  Future<String> fetchUsernickname(String userId) async {
-    final url = Uri.parse('http://$ip:3000/api/user/$userId');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> userdata = jsonDecode(response.body);
-      final String nickname = userdata['profile_nickname']; // 서버 응답에서 닉네임 추출
-      return nickname;
-    } else {
-      throw Exception('Failed to load user data');
-    }
   }
 
   Future<void> fetchMatches() async {
@@ -64,8 +49,7 @@ class HomePageState extends State<HomePage> {
       return;
     }
 
-    final url =
-        Uri.parse("http://${ip}:3000/api/match/${match.matchId}/reserve");
+    final url = Uri.parse("http://${ip}:3000/api/match/${match.matchId}/reserve");
     final response = await http.post(url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -86,55 +70,7 @@ class HomePageState extends State<HomePage> {
         textColor: Colors.white,
       );
 
-      setState(() {  Future<void> reserveMatch(Match match) async {
-        if ((match.cur_member ?? 0) >= (match.max_member ?? double.infinity)) {
-          Fluttertoast.showToast(
-            msg: '이미 예약이 마감 된 경기입니다',
-            toastLength: Toast.LENGTH_SHORT,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black54,
-            fontSize: 15.0,
-            textColor: Colors.white,
-          );
-          return;
-        }
-
-        final url =
-        Uri.parse("http://${ip}:3000/api/match/${match.matchId}/reserve");
-        final response = await http.post(url,
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode(<String, String>{
-              'userId': widget.user.id.toString(),
-            }));
-
-        print("reserveMatch executed");
-
-        if (response.statusCode == 200) {
-          Fluttertoast.showToast(
-            msg: '예약 되었습니다',
-            toastLength: Toast.LENGTH_SHORT,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black54,
-            fontSize: 15.0,
-            textColor: Colors.white,
-          );
-
-          setState(() {
-            fetchMatches();
-          });
-        } else {
-          Fluttertoast.showToast(
-            msg: '예약에 실패했습니다',
-            toastLength: Toast.LENGTH_SHORT,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.black54,
-            fontSize: 15.0,
-            textColor: Colors.white,
-          );
-        }
-      }
+      setState(() {
         fetchMatches();
       });
     } else {
@@ -150,8 +86,7 @@ class HomePageState extends State<HomePage> {
   }
 
   bool isUserReserved(Match match) {
-    return match.match_members
-        .any((member) => member == widget.user.id.toString());
+    return match.match_members.any((member) => member == widget.user.id.toString());
   }
 
   String getButtonLabel(Match match) {
@@ -163,8 +98,8 @@ class HomePageState extends State<HomePage> {
     return '예약';
   }
 
-  Color getButtonColor(Match match){
-    if((match.cur_member ?? 0) >= match.max_member){
+  Color getButtonColor(Match match) {
+    if ((match.cur_member ?? 0) >= match.max_member) {
       return Colors.grey;
     } else if (isUserReserved(match)) {
       return Colors.green;
@@ -183,8 +118,8 @@ class HomePageState extends State<HomePage> {
         title: Text("홈"),
         automaticallyImplyLeading: false,
       ),
-      body: FutureBuilder<String>(
-        future: futureNickname,
+      body: FutureBuilder<User>(
+        future: UserApi.instance.me(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: SpinKitChasingDots(color: Colors.black38));
@@ -193,8 +128,7 @@ class HomePageState extends State<HomePage> {
           } else {
             return Scaffold(
               backgroundColor: Colors.white,
-              floatingActionButtonLocation:
-                  FloatingActionButtonLocation.centerFloat,
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 automaticallyImplyLeading: false,
@@ -203,20 +137,20 @@ class HomePageState extends State<HomePage> {
                     ClipOval(
                       child: profileImageUrl != null
                           ? Image.network(
-                              profileImageUrl,
-                              fit: BoxFit.cover,
-                              width: 40,
-                              height: 40,
-                            )
+                        profileImageUrl,
+                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                      )
                           : Image.asset(
-                              'assets/football.png',
-                              fit: BoxFit.cover,
-                              width: 40,
-                              height: 40,
-                            ),
+                        'assets/football.png',
+                        fit: BoxFit.cover,
+                        width: 40,
+                        height: 40,
+                      ),
                     ),
                     SizedBox(width: 10),
-                    Text("안녕하세요, ${snapshot.data}님"),
+                    Text("안녕하세요, ${user.kakaoAccount?.profile?.nickname}님"),
                   ],
                 ),
               ),
@@ -226,62 +160,103 @@ class HomePageState extends State<HomePage> {
                   Match match = matches[index];
                   bool userReserved = isUserReserved(match);
                   return Card(
-                    color: Colors.white70,
+                    color: Colors.white,
                     elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(color: Colors.grey.shade300, width: 1),
+                    ),
                     margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    child: ListTile(
-                        leading: match.image != null
-                            ? SizedBox(
-                                width: 50, // 고정된 너비 설정
-                                child: Image.network(
-                                  'http://${ip}:3000/${match.image!.replaceFirst(RegExp(r'^/+'), '')}',
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : null,
-                        title: Text(match.matchTitle),
-                        subtitle: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('${match.date} ${match.time}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                )),
-                            Text('${match.max_member} vs ${match.max_member}'),
-                          ],
-                        ),
-                        onTap: () async {
-                          final deletedMatchId = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  MatchDetailPage(match: match, currentUserId: user.id.toString(), user: user),
-                            ),
-                          );
-                          fetchMatches();
-                        },
-                        trailing: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                                '${match.cur_member ?? 0} / ${match.max_member}'),
-                            Expanded(
-                              //height: 40,
-                              child: ElevatedButton(
-                                  onPressed: (userReserved ||
-                                          (match.cur_member ?? 0) >=
-                                              match.max_member)
-                                      ? null
-                                      : () => reserveMatch(match),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: getButtonColor(match),
+                    child: Column(
+                      children: [
+                        Container(
+                          color: Colors.white,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 85,  // You can adjust the height based on your needs
+                                color: (match.cur_member ?? 0) >= match.max_member!
+                                    ? Colors.red
+                                    : (match.cur_member ?? 0) > (match.max_member! / 2)
+                                    ? Colors.orange
+                                    : Colors.blue,
+                              ),
+                              Expanded(
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                  title: Text(
+                                    match.matchTitle,
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                                   ),
-                                  child: Text(getButtonLabel(match),
-                                      style: TextStyle(color: Colors.white))),
-                            ),
-                          ],
-                        )),
+                                  subtitle: Container(
+                                    color: Colors.grey.shade200,
+                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${match.date} ${match.time}',
+                                          style: TextStyle(fontSize: 13),
+                                        ),
+                                        SizedBox(height: 5),
+                                        Text(
+                                          '${match.max_member} vs ${match.max_member}',
+                                          style: TextStyle(fontSize: 13),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '${match.cur_member ?? 0} / ${match.max_member}',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                      SizedBox(height: 5),
+                                      Flexible(
+                                        child: ElevatedButton(
+                                          onPressed: (userReserved || (match.cur_member ?? 0) >= match.max_member)
+                                              ? null
+                                              : () => reserveMatch(match),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: getButtonColor(match),
+                                          ).copyWith(
+                                            backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+                                                  (Set<WidgetState> states) {
+                                                if (states.contains(WidgetState.disabled)) {
+                                                  return getButtonColor(match); // Preserve color when disabled
+                                                }
+                                                return getButtonColor(match); // Default button color
+                                              },
+                                            ),
+                                          ),
+                                          child: Text(
+                                            getButtonLabel(match),
+                                            style: TextStyle(color: Colors.white, fontSize: 12),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  onTap: () async {
+                                    final deletedMatchId = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            MatchDetailPage(match: match, currentUserId: user.id.toString(), user: user),
+                                      ),
+                                    );
+                                    fetchMatches();
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 },
               ),
@@ -295,16 +270,16 @@ class HomePageState extends State<HomePage> {
                     MaterialPageRoute(builder: (context) => PostMatchPage()),
                   );
                   if (newMatch != null) {
-                      Fluttertoast.showToast(
-                        msg: '새 경기가 등록되었습니다',
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.CENTER,
-                        timeInSecForIosWeb: 1,
-                        backgroundColor: Colors.black54,
-                        fontSize: 15.0,
-                        textColor: Colors.white,
-                      );
-                      fetchMatches();
+                    Fluttertoast.showToast(
+                      msg: '새 경기가 등록되었습니다',
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.black54,
+                      fontSize: 15.0,
+                      textColor: Colors.white,
+                    );
+                    fetchMatches();
                   }
                 },
                 label: Text("새 경기 등록하기", style: TextStyle(color: Colors.white)),

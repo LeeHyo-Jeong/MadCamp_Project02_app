@@ -11,7 +11,7 @@ class Match {
   final int max_member;
   final String? image;
   final int level;
-  int? cur_member;
+  int? cur_member = 0;
   List<String> match_members; //user_id의 list
   final String user_id; // 작성자의 user_id
 
