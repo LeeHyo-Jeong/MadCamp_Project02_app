@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kakaotest/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kakaotest/audio_player_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key, required this.user});
@@ -323,15 +325,62 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 }
 
-class NotificationSettingsPage extends StatelessWidget {
+
+class NotificationSettingsPage extends StatefulWidget {
+  @override
+  _NotificationSettingsPageState createState() => _NotificationSettingsPageState();
+}
+
+class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
+  bool _isBgmEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBgmSetting();
+  }
+
+  Future<void> _loadBgmSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isBgmEnabled = prefs.getBool('isBgmEnabled') ?? true;
+    });
+  }
+
+  Future<void> _toggleBgm(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isBgmEnabled = value;
+      prefs.setBool('isBgmEnabled', _isBgmEnabled);
+      if (_isBgmEnabled) {
+        assetsAudioPlayer.open(
+          Audio("assets/audio/bgm.mp3"),
+          loopMode: LoopMode.single,
+          autoStart: true,
+        );
+      } else {
+        assetsAudioPlayer.stop();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('알림 설정'),
+        title: Text('배경음 설정'),
       ),
-      body: Center(
-        child: Text('알림 설정 페이지입니다.'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            SwitchListTile(
+              title: Text('배경 음악 켜기/끄기'),
+              value: _isBgmEnabled,
+              onChanged: _toggleBgm,
+            ),
+          ],
+        ),
       ),
     );
   }

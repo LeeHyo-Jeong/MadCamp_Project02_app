@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,6 +11,9 @@ import 'package:kakaotest/first_login.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:kakaotest/audio_player_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 void main() async {
   await dotenv.load(fileName: "assets/.env");
@@ -19,6 +23,17 @@ void main() async {
     nativeAppKey: dotenv.env['nativeAppKey'],
     javaScriptAppKey: dotenv.env['javaScriptAppKey'],
   );
+
+  final prefs = await SharedPreferences.getInstance();
+  bool isBgmEnabled = prefs.getBool('isBgmEnabled') ?? true;
+
+  if (isBgmEnabled) {
+    assetsAudioPlayer.open(
+      Audio("assets/audio/Time_Bomb.mp3"),
+      loopMode: LoopMode.single,
+      autoStart: true,
+    );
+  }
 
   runApp(MyApp());
 }
@@ -79,14 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
         );
 
         if (result == true) {
-          final response = await http.put(
-            Uri.parse('http://${ip}:3000/api/user-info'),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          );
-
-          if (response.statusCode == 200) {
             Fluttertoast.showToast(
               msg: 'First login info submitted',
               toastLength: Toast.LENGTH_SHORT,
@@ -99,7 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
           } else {
             print('Failed to update isFirstLogin');
           }
-        }
       });
     }
   }
@@ -128,6 +134,8 @@ class _MyHomePageState extends State<MyHomePage> {
       } else if (index == 0) {
         _homePageKey.currentState?.fetchMatches();
         fetchUserData();
+      } else if (index == 2) {
+        //fetchUserDataForProfilePage();
       }
     });
   }
@@ -145,7 +153,22 @@ class _MyHomePageState extends State<MyHomePage> {
       print('Error fetching user data: $error');
     }
   }
-
+/*
+  Future<void> fetchUserDataForProfilePage() async {
+    try {
+      final response = await http.get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
+      print("response: ${response.body}");
+      if (response.statusCode == 200) {
+        final userData = jsonDecode(response.body);
+        _profilePageKey.currentState?.updateUserData(userData);
+      } else {
+        throw Exception('Failed to load user data');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
+    }
+  }
+  */
   @override
   Widget build(BuildContext context) {
     return Scaffold(

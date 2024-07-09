@@ -21,6 +21,7 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
   final User user;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _teamController = TextEditingController();
+  final TextEditingController _memoController = TextEditingController();
   String? ip = dotenv.env['ip'];
 
   _FirstLoginInfoDialogState({required this.user});
@@ -33,6 +34,8 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
       final level = _selectedLevel;
       final team =
           _teamController.text.isNotEmpty ? _teamController.text : '무소속';
+      final memo =
+      _memoController.text.isNotEmpty ? _memoController.text : ' ';
       final userId = user.id.toString();
 
       final response = await http.post(
@@ -43,11 +46,12 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
         },
         body: jsonEncode({
           'user_id': userId,
+          'memo': memo,
           'level': level,
           'team': team,
         }),
       );
-      print(response.statusCode);
+      //print(response.statusCode);
       print('Response body: ${response.body}');
       if (response.statusCode == 200) {
         Navigator.pop(context, true);
@@ -95,6 +99,13 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
                 controller: _teamController,
                 decoration: InputDecoration(
                     labelText: "소속 팀 이름을 입력 해 주세요",
+                    filled: true,
+                    fillColor: Colors.white),
+              ),
+              TextFormField(
+                controller: _memoController,
+                decoration: InputDecoration(
+                    labelText: "한 줄 소개를 입력 해 주세요",
                     filled: true,
                     fillColor: Colors.white),
               ),
