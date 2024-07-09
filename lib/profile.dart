@@ -1,35 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:kakaotest/login.dart';
 
-class Profilepage extends StatefulWidget {
-  const Profilepage({super.key});
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
 
   @override
-  State<Profilepage> createState() => _ProfilepageState();
+  State<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilepageState extends State<Profilepage> {
+class _ProfilePageState extends State<ProfilePage> {
+  Future<void> _logout() async {
+    try {
+      await UserApi.instance.logout();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } catch (error) {
+      print('Logout failed: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text("프로필"),
+        title: Text(
+          "프로필",
+          style: TextStyle(color: Colors.black),
+        ),
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<User>(
         future: UserApi.instance.me(),
-        builder: (context, snapshot){
-          if(snapshot.connectionState == ConnectionState.waiting){
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: SpinKitChasingDots(color: Colors.black38));
-          } else if(snapshot.hasError){
+          } else if (snapshot.hasError) {
             return Center(child: Text('Failed to load user info'));
-          } else{
+          } else {
             User user = snapshot.data!;
             String? profileImageUrl = user.kakaoAccount?.profile?.profileImageUrl;
             return Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ClipOval(
                     child: profileImageUrl != null
@@ -46,19 +63,31 @@ class _ProfilepageState extends State<Profilepage> {
                       height: 100,
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Text("${user.kakaoAccount?.profile?.nickname}",
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(height: 20),
+                  Text(
+                    "${user.kakaoAccount?.profile?.nickname}",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _logout,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: Text(
+                      '로그아웃',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ],
               ),
             );
           }
-        }
-      )
+        },
+      ),
     );
   }
 }
