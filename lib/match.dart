@@ -13,6 +13,7 @@ class Match {
   final int level;
   int? cur_member;
   List<String> match_members; //user_id의 list
+  final String user_id; // 작성자의 user_id
 
   Match({
     required this.matchId,
@@ -26,13 +27,13 @@ class Match {
     required this.level,
     this.cur_member,
     required this.match_members,
+    required this.user_id,
   });
 
   factory Match.fromJson(Map<String, dynamic> json) {
     print('$json');
     var userList = json['match_members'] as List;
     List<String> match_members = userList.map((i) => i.toString()).toList();
-    print(match_members);
 
     return Match(
       matchId: json['matchId'],
@@ -46,6 +47,7 @@ class Match {
       level: json['level'],
       cur_member: json['cur_member'],
       match_members: match_members,
+      user_id: json['user_id'] ?? ' ',
     );
   }
 
@@ -62,6 +64,7 @@ class Match {
       'level': level,
       'cur_member': cur_member,
       'match_members': match_members,
+      'user_id': user_id,
     };
   }
 }

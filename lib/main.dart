@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
       title: 'Kakao Login',
       theme: ThemeData(
         primarySwatch: Colors.grey,
+        scaffoldBackgroundColor: Colors.white,
       ),
       home: LoginPage(),
       routes: {

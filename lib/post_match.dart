@@ -6,8 +6,19 @@ import 'match.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 String? ip = dotenv.env['ip'];
+
+Future<User> getUser() async{
+  try {
+    User user = await UserApi.instance.me();
+    return user;
+  } catch(e){
+    print("Error getting user ${e}");
+    throw e;
+  }
+}
 
 Future<void> addMatch(Match match) async {
   final url = Uri.parse('http://${ip}:3000/api/match');
@@ -56,42 +67,15 @@ Future<List<Match>> getAllMatches() async {
   }
 }
 
-Future<void> updateMatch(String id, Match match) async {
-  final url = Uri.parse('http://${ip}:3000/api/match/$id');
-
-  final response = await http.put(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(match.toJson()),
-  );
-
-  if (response.statusCode == 200) {
-    print("Match successfully updated");
-  } else {
-    print("Failed to update match: ${response.statusCode}");
-  }
-}
-
-Future<void> deleteMatch(String id) async {
-  final url = Uri.parse('http://${ip}:3000/api/match/$id');
-
-  final response = await http.delete(url);
-
-  if (response.statusCode == 200) {
-    print("Match successfully deleted");
-  } else {
-    print("Failed to delete match: ${response.statusCode}");
-  }
-}
-
 class PostMatchPage extends StatefulWidget {
   @override
   _PostMatchPageState createState() => _PostMatchPageState();
 }
 
 class _PostMatchPageState extends State<PostMatchPage> {
+
+  User? user;
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _placeController = TextEditingController();
@@ -105,6 +89,23 @@ class _PostMatchPageState extends State<PostMatchPage> {
   String? _selectedTime;
   int? _selectedMemberCount;
   final List<int> _memberOptions = [6, 7, 8, 9, 10, 11, 12];
+
+  Future<void> _initializeUser() async{
+    try{
+      User user = await getUser();
+      setState(() {
+        this.user = user;
+      });
+    } catch(e){
+      print("Error initializing user ${e}");
+    }
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    _initializeUser();
+  }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -159,6 +160,7 @@ class _PostMatchPageState extends State<PostMatchPage> {
         level: int.parse(_levelController.text),
         match_members: [],
         image: imageUrl,
+        user_id: user!.id.toString()
       );
       addMatch(newMatch);
       Navigator.pop(context, newMatch);
@@ -171,6 +173,16 @@ class _PostMatchPageState extends State<PostMatchPage> {
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child){
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.white70,
+            colorScheme: ColorScheme.light(primary: Colors.black),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      }
     );
     if (picked != null) {
       setState(() {
@@ -184,6 +196,16 @@ class _PostMatchPageState extends State<PostMatchPage> {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.now(),
+      builder: (BuildContext context, Widget? child){
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: Colors.white70,
+            colorScheme: ColorScheme.light(primary: Colors.black),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child!,
+        );
+      }
     );
     if (picked != null) {
       setState(() {
@@ -315,7 +337,6 @@ class _PostMatchPageState extends State<PostMatchPage> {
                 ),
                 _image != null ? Image.file(_image!) : Container(),
                 SizedBox(height: 20),
-                SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
@@ -323,6 +344,7 @@ class _PostMatchPageState extends State<PostMatchPage> {
                   onPressed: _pickImage,
                   child: Text("이미지 선택", style: TextStyle(color: Colors.white)),
                 ),
+                SizedBox(height: 10),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
