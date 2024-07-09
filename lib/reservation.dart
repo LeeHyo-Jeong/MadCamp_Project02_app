@@ -81,6 +81,7 @@ class ReservationPageState extends State<ReservationPage> {
   late Future<List<Match>> futureReservations;
   DateTime _selectedDay = DateTime.now();
   Map<DateTime, List<Match>> _groupedReservations = {};
+  Map<String, dynamic>? userData;
 
   @override
   void initState() {
@@ -94,6 +95,12 @@ class ReservationPageState extends State<ReservationPage> {
     });
   }
 
+  void updateUserData(Map<String, dynamic> data) {
+    setState(() {
+      userData = data;
+    });
+  }
+
   List<Match> _getEventsForDay(DateTime day) {
     return _groupedReservations[DateTime(day.year, day.month, day.day)] ?? [];
   }
@@ -101,7 +108,6 @@ class ReservationPageState extends State<ReservationPage> {
   void _groupReservationsByDate(List<Match> reservations) {
     _groupedReservations.clear();
     for (var reservation in reservations) {
-      // Adjust the date format parsing to match your date strings
       final date = DateFormat('yyyy년 MM월 dd일').parse(reservation.date);
       final formattedDate = DateTime(date.year, date.month, date.day);
       if (_groupedReservations[formattedDate] == null) {
@@ -113,7 +119,7 @@ class ReservationPageState extends State<ReservationPage> {
 
   @override
   Widget build(BuildContext context) {
-    String? profileImageUrl = widget.user.kakaoAccount?.profile?.profileImageUrl;
+    String? profileImageUrl = userData?['image_url'];
 
     return Scaffold(
       appBar: AppBar(
@@ -136,7 +142,7 @@ class ReservationPageState extends State<ReservationPage> {
               ),
             ),
             SizedBox(width: 10),
-            Text("안녕하세요, ${widget.user.kakaoAccount?.profile?.nickname}님"),
+            Text("안녕하세요, ${userData?['profile_nickname']}님"),
           ],
         ),
         automaticallyImplyLeading: false,
@@ -212,10 +218,12 @@ class ReservationPageState extends State<ReservationPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      MatchDetailPage(match: reservation, currentUserId: widget.user.id.toString(), user:widget.user),
+                                  builder: (context) => MatchDetailPage(
+                                      match: reservation,
+                                      currentUserId: widget.user.id.toString(),
+                                      user: widget.user),
                                 ),
-                              ).then((_) => fetchReservations()); // Detail 페이지에서 돌아오면 목록 갱신
+                              ).then((_) => fetchReservations());
                             },
                             trailing: Column(
                               children: [
@@ -267,10 +275,12 @@ class ReservationPageState extends State<ReservationPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      MatchDetailPage(match: reservation, currentUserId: widget.user.id.toString(), user: widget.user),
+                                  builder: (context) => MatchDetailPage(
+                                      match: reservation,
+                                      currentUserId: widget.user.id.toString(),
+                                      user: widget.user),
                                 ),
-                              ).then((_) => fetchReservations()); // Detail 페이지에서 돌아오면 목록 갱신
+                              ).then((_) => fetchReservations());
                             },
                             trailing: Column(
                               children: [
