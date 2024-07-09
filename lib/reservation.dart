@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'match.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'match_detail.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -142,7 +141,7 @@ class ReservationPageState extends State<ReservationPage> {
               ),
             ),
             SizedBox(width: 10),
-            Text("안녕하세요, ${userData?['profile_nickname']}님"),
+            Text("${userData?['profile_nickname']}님의 경기"),
           ],
         ),
         automaticallyImplyLeading: false,
@@ -229,7 +228,9 @@ class ReservationPageState extends State<ReservationPage> {
                               children: [
                                 Text(
                                     '${reservation.cur_member ?? 0} / ${reservation.max_member}'),
-                                ElevatedButton(
+                                ConstrainedBox(
+                                  constraints: BoxConstraints.tightFor(height: 30),
+                                  child: ElevatedButton(
                                   onPressed: () async {
                                     await cancelReservation(
                                         reservation.matchId.toString(),
@@ -237,11 +238,12 @@ class ReservationPageState extends State<ReservationPage> {
                                     fetchReservations();
                                   },
                                   style: ElevatedButton.styleFrom(
+
                                     backgroundColor: Colors.red,
                                   ),
                                   child: Text('예약 취소',
-                                      style: TextStyle(color: Colors.white)),
-                                ),
+                                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                                ),),
                               ],
                             ),
                           ),
@@ -255,52 +257,97 @@ class ReservationPageState extends State<ReservationPage> {
                       ),
                       ...otherReservations.map((reservation) {
                         return Card(
-                          color: Colors.white70,
+                          color: Colors.white,
                           elevation: 4,
-                          margin: EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 10),
-                          child: ListTile(
-                            title: Text(reservation.matchTitle),
-                            subtitle: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('${reservation.date} ${reservation.time}',
-                                    style: TextStyle(fontSize: 13)),
-                                Text(
-                                    '${reservation.max_member} vs ${reservation.max_member}'),
-                              ],
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MatchDetailPage(
-                                      match: reservation,
-                                      currentUserId: widget.user.id.toString(),
-                                      user: widget.user),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: Colors.grey.shade300, width: 1),
+                          ),
+                          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                          child: Column(
+                            children: [
+                              Container(
+                                color: Colors.white,
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 8,
+                                      height: 85,  // You can adjust the height based on your needs
+                                      color: (reservation.cur_member ?? 0) >= reservation.max_member!
+                                          ? Colors.red
+                                          : (reservation.cur_member ?? 0) > (reservation.max_member! / 2)
+                                          ? Colors.orange
+                                          : Colors.blue,
+                                    ),
+                                    Expanded(
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                        title: Text(
+                                          reservation.matchTitle,
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                        ),
+                                        subtitle: Container(
+                                          color: Colors.grey.shade200,
+                                          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${reservation.date} ${reservation.time}',
+                                                style: TextStyle(fontSize: 13),
+                                              ),
+                                              SizedBox(height: 5),
+                                              Text(
+                                                '${reservation.max_member} vs ${reservation.max_member}',
+                                                style: TextStyle(fontSize: 13),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        trailing: SizedBox(
+                                          child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              '${reservation.cur_member ?? 0} / ${reservation.max_member}',
+                                              style: TextStyle(fontSize: 14),
+                                            ),
+                                            SizedBox(height: 5),
+                                            Flexible(
+                                              child: ElevatedButton(
+                                                onPressed: () async {
+                                                  await cancelReservation(
+                                                      reservation.matchId.toString(),
+                                                      widget.user.id.toString());
+                                                  fetchReservations();
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                                child: Text(
+                                                  '예약 취소',
+                                                  style: TextStyle(color: Colors.white, fontSize: 12),
+                                                ),
+                                              ),
+                                            ),
+                                          ],),
+                                        ),
+                                        onTap: () async {
+                                          await Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => MatchDetailPage(
+                                                  match: reservation,
+                                                  currentUserId: widget.user.id.toString(),
+                                                  user: widget.user),
+                                            ),
+                                          ).then((_) => fetchReservations());
+                                        },
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ).then((_) => fetchReservations());
-                            },
-                            trailing: Column(
-                              children: [
-                                Text(
-                                    '${reservation.cur_member ?? 0} / ${reservation.max_member}'),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    await cancelReservation(
-                                        reservation.matchId.toString(),
-                                        widget.user.id.toString());
-                                    fetchReservations();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                  ),
-                                  child: Text('예약 취소',
-                                      style: TextStyle(color: Colors.white)),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         );
                       }).toList(),
