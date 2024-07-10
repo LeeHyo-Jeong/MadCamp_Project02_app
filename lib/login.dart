@@ -93,16 +93,44 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: InkWell(
-          onTap: () {
-            signInWithKakao();
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            SystemNavigator.pop();
           },
-          child: Image.asset(
-            'assets/kakao_login_large_wide.png',
-          ),
-        ),
+        )
       ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+        child:
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(height: 50),
+              Text("간편로그인 후", style: TextStyle(fontFamily: 'Elice', fontSize: 25)),
+              Text("이용이", style: TextStyle(fontFamily: 'Elice', fontSize: 25)),
+              Text("가능합니다.", style: TextStyle(fontFamily: 'Elice', fontSize: 25)),
+          SizedBox(height: 40),
+          Align(
+            alignment: Alignment.centerRight,
+              child: Image.asset("assets/football.png", width: 130, height: 130,)),
+          SizedBox(height: 80),
+          Center(
+            child: InkWell(
+              onTap: () {
+                signInWithKakao();
+              },
+              child: Image.asset(
+                'assets/kakao_login_large_wide.png',
+              ),
+            ),
+          ),
+        ],
+      ),
+    )
     );
   }
 }

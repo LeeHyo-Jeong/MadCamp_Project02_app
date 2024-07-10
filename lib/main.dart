@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kakao Login',
       theme: ThemeData(
+        fontFamily: 'Elice_Regular',
         primarySwatch: Colors.grey,
         scaffoldBackgroundColor: Colors.white,
       ),
@@ -95,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         if (result == true) {
             Fluttertoast.showToast(
-              msg: 'First login info submitted',
+              msg: '환영합니다!',
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.CENTER,
               timeInSecForIosWeb: 1,
@@ -206,3 +207,43 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+// // splash screen 만들기..
+//
+// class SplashScreen extends StatefulWidget {
+//   final User user;
+//   final GlobalKey<HomePageState> _homePageKey;
+//
+//   SplashScreen({required this.user, this.homePageKey});
+//
+//   @override
+//   _SplashScreenState createState() => _SplashScreenState();
+// }
+//
+// class _SplashScreenState extends State<SplashScreen> {
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _navigateToHome();
+//   }
+//
+//   _navigateToHome() async {
+//     await Future.delayed(Duration(seconds: 3), () {}); // 3초 대기
+//     Navigator.pushReplacement(
+//       context,
+//       MaterialPageRoute(builder: (context) =>
+//           HomePage(key: widget.homePageKey, user: widget.user)),
+//     );
+//
+//     @override
+//     Widget build(BuildContext context) {
+//       return MaterialApp(
+//         home: LoginPage(),
+//         routes: {
+//           '/login': (context) => LoginPage(),
+//         },
+//       );
+//     }
+//   }
+//   }

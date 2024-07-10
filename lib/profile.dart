@@ -60,7 +60,7 @@ class _ProfilePageState extends State<ProfilePage> {
         backgroundColor: Colors.white,
         title: Text(
           "프로필",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black, fontFamily: 'Elice'),
         ),
         automaticallyImplyLeading: false,
       ),
@@ -81,6 +81,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   _buildProfileHeader(profileImageUrl, userData),
                   SizedBox(height: 20),
                   _buildProfileInfo(userData),
+                  SizedBox(height: 20),
                   Divider(),
                   _buildProfileActions(userData),
                 ],
@@ -94,6 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildProfileHeader(String? profileImageUrl, Map<String, dynamic> userData) {
     return Card(
+      color: Colors.white,
       margin: EdgeInsets.symmetric(horizontal: 16.0),
       elevation: 4.0,
       shape: RoundedRectangleBorder(
@@ -144,6 +146,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildProfileInfo(Map<String, dynamic> userData) {
     return Card(
+      color: Colors.white,
       margin: EdgeInsets.symmetric(horizontal: 16.0),
       elevation: 4.0,
       shape: RoundedRectangleBorder(
@@ -153,9 +156,9 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildProfileInfoItem(Icons.star, "레벨: ${userData['level']}"),
+            _buildProfileInfoItem(Icons.star, "레벨: ${userData['level'] ?? "레벨 정보가 없습니다"}"),
             Divider(),
-            _buildProfileInfoItem(Icons.group, "팀: ${userData['team']}"),
+            _buildProfileInfoItem(Icons.group, "팀: ${userData['team'] ?? "팀 정보가 없습니다"}"),
           ],
         ),
       ),

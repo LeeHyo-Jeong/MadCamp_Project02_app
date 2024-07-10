@@ -142,7 +142,7 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text("홈"),
+        title: Text("홈", style: TextStyle(fontFamily: 'Elice')),
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<User>(
@@ -177,7 +177,7 @@ class HomePageState extends State<HomePage> {
                       ),
                     ),
                     SizedBox(width: 10),
-                    Text("안녕하세요, ${userData!['profile_nickname']}님"),
+                    Text("안녕하세요, ${userData!['profile_nickname']}님", style: TextStyle(fontFamily: 'Elice')),
                   ],
                 ),
               ),
@@ -214,7 +214,7 @@ class HomePageState extends State<HomePage> {
                                   contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                                   title: Text(
                                     match.matchTitle,
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                   ),
                                   subtitle: Container(
                                     color: Colors.grey.shade200,

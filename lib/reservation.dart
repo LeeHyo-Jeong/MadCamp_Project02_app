@@ -141,7 +141,7 @@ class ReservationPageState extends State<ReservationPage> {
               ),
             ),
             SizedBox(width: 10),
-            Text("${userData?['profile_nickname']}님의 경기"),
+            Text("${userData?['profile_nickname']}님의 경기", style: TextStyle(fontFamily: 'Elice')),
           ],
         ),
         automaticallyImplyLeading: false,
@@ -167,6 +167,8 @@ class ReservationPageState extends State<ReservationPage> {
             return Column(
               children: [
                 TableCalendar(
+                  calendarStyle: CalendarStyle(selectedDecoration: const BoxDecoration(color: Colors.lightBlue, shape: BoxShape.circle),
+                  todayDecoration: const BoxDecoration(color: Colors.lightBlueAccent, shape: BoxShape.circle)),
                   firstDay: DateTime.utc(2020, 1, 1),
                   lastDay: DateTime.utc(2030, 12, 31),
                   focusedDay: _selectedDay,
