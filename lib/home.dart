@@ -143,7 +143,7 @@ class HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Center(
-          child: Image.asset('assets/app_icon.png', width: 50, height: 50),
+          child: Image.asset('assets/로고만.jpg', width: 50, height: 50),
         ),
         automaticallyImplyLeading: false,
       ),

@@ -86,6 +86,8 @@ flutter:
     - assets/kakao_login_large_wide.png
     - assets/kakao_login_medium_narrow.png
     - assets/audio/Time_Bomb.mp3
+    - assets/logo.gif
+    - assets/로고만.jpg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

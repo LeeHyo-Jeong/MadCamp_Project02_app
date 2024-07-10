@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:kakaotest/login.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,7 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToLogin() async {
-    await Future.delayed(Duration(seconds: 3), () {});
+    await Future.delayed(Duration(seconds: 2), () {});
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
@@ -27,9 +26,10 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: SpinKitFadingCircle(
-          color: Colors.grey,
-          size: 50.0,
+        child: Image.asset(
+          'assets/logo.gif',
+          width: 100.0,
+          height: 100.0,
         ),
       ),
     );
