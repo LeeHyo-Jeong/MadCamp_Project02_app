@@ -128,7 +128,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isCreator = (widget.match.user_id == widget.currentUserId);
+    final isCreator = widget.match.user_id == widget.currentUserId;
 
     return Scaffold(
       appBar:

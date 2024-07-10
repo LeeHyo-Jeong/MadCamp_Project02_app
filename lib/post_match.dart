@@ -60,7 +60,6 @@ Future<List<Match>> getAllMatches() async {
     final List<dynamic> matchesData = jsonDecode(response.body);
     final List<Match> matches =
     matchesData.map((data) => Match.fromJson(data)).toList();
-    //print("Matches data: ${matches.map((match) => match.toJson())}");
     return matches;
   } else {
     throw Exception("Failed to fetch matches: ${response.statusCode}");
@@ -82,7 +81,6 @@ class _PostMatchPageState extends State<PostMatchPage> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  final TextEditingController _levelController = TextEditingController();
   File? _image;
 
   String? _selectedDate;
@@ -157,7 +155,6 @@ class _PostMatchPageState extends State<PostMatchPage> {
           matchTitle: _titleController.text,
           content: _contentController.text,
           max_member: _selectedMemberCount!,
-          level: int.parse(_levelController.text),
           match_members: [],
           image: imageUrl,
           user_id: user!.id.toString()
@@ -317,20 +314,6 @@ class _PostMatchPageState extends State<PostMatchPage> {
                   validator: (value) {
                     if (value == null) {
                       return '팀의 인원 수를 입력 해 주세요';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _levelController,
-                  decoration: InputDecoration(labelText: '축구 실력'),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '축구 실력을 입력 해 주세요';
-                    }
-                    if (int.tryParse(value) == null) {
-                      return '실력은 1~10 사이의 수로 입력 해 주세요';
                     }
                     return null;
                   },
