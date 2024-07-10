@@ -1,6 +1,4 @@
 
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-
 class Match {
   final int matchId;
   final String date;
@@ -10,7 +8,7 @@ class Match {
   final String content;
   final int max_member;
   final String? image;
-  final int level;
+  int? level;
   int? cur_member = 0;
   List<String> match_members; //user_id의 list
   final String user_id; // 작성자의 user_id
@@ -24,7 +22,7 @@ class Match {
     required this.content,
     required this.max_member,
     this.image,
-    required this.level,
+    this.level,
     this.cur_member,
     required this.match_members,
     required this.user_id,

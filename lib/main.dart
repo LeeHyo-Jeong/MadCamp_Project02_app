@@ -12,6 +12,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakaotest/audio_player_service.dart';
+import 'package:kakaotest/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.grey,
         scaffoldBackgroundColor: Colors.white,
       ),
-      home: LoginPage(),
+      home: SplashScreen(),
       routes: {
         '/login': (context) => LoginPage(),
       },
@@ -86,18 +87,18 @@ class _MyHomePageState extends State<MyHomePage> {
         );
 
         if (result == true) {
-            Fluttertoast.showToast(
-              msg: '환영합니다!',
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.black54,
-              fontSize: 15.0,
-              textColor: Colors.white,
-            );
-          } else {
-            print('Failed to update isFirstLogin');
-          }
+          Fluttertoast.showToast(
+            msg: '환영합니다!',
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.black54,
+            fontSize: 15.0,
+            textColor: Colors.white,
+          );
+        } else {
+          print('Failed to update isFirstLogin');
+        }
       });
     }
     _initBgm();

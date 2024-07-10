@@ -80,17 +80,18 @@ class ProfilePageState extends State<ProfilePage> {
       body: userData == null
           ? Center(child: SpinKitChasingDots(color: Colors.black38))
           : SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: 20),
-                  _buildProfileHeader(userData!),
-                  SizedBox(height: 20),
-                  _buildProfileInfo(userData!),
-                  Divider(),
-                  _buildProfileActions(userData!),
-                ],
-              ),
-            ),
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            _buildProfileHeader(userData!),
+            SizedBox(height: 20),
+            _buildProfileInfo(userData!),
+            SizedBox(height: 20),
+            Divider(),
+            _buildProfileActions(userData!),
+          ],
+        ),
+      ),
     );
   }
 
@@ -375,6 +376,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text('배경음 설정'),
       ),
       body: Padding(

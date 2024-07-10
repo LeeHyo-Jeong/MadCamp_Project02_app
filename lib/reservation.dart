@@ -204,7 +204,7 @@ class ReservationPageState extends State<ReservationPage> {
                           margin: EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
                           child: ListTile(
-                            title: Text(reservation.matchTitle),
+                            title: Text(reservation.matchTitle, style: TextStyle(fontSize: 14,)),
                             subtitle: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,7 +286,7 @@ class ReservationPageState extends State<ReservationPage> {
                                         contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                                         title: Text(
                                           reservation.matchTitle,
-                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                         ),
                                         subtitle: Container(
                                           color: Colors.grey.shade200,
