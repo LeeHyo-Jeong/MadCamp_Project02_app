@@ -6,6 +6,17 @@ A new Flutter project.
 킥인은 함께 축구할 수 있는 사람을 구하는 소셜 매칭 어플입니다. 
 
 킥인을 통해 언제 어디서나 경기에 참여하세요!
+## Texh Stack
+**Frontend** : Flutter
+
+**Backend-Server** : Node js express
+
+**DataBase** : Mongo DB
+
+**Cloud** : AWS
+
+**IDE** : Android Studio, Visual Studio
+
 
 ## Details
 탭1: 홈
