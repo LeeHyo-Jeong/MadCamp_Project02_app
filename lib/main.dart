@@ -24,16 +24,6 @@ void main() async {
     javaScriptAppKey: dotenv.env['javaScriptAppKey'],
   );
 
-  final prefs = await SharedPreferences.getInstance();
-  bool isBgmEnabled = prefs.getBool('isBgmEnabled') ?? true;
-
-  if (isBgmEnabled) {
-    assetsAudioPlayer.open(
-      Audio("assets/audio/Time_Bomb.mp3"),
-      loopMode: LoopMode.single,
-      autoStart: true,
-    );
-  }
 
   runApp(MyApp());
 }
@@ -109,6 +99,19 @@ class _MyHomePageState extends State<MyHomePage> {
             print('Failed to update isFirstLogin');
           }
       });
+    }
+    _initBgm();
+  }
+  Future<void> _initBgm() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isBgmEnabled = prefs.getBool('isBgmEnabled') ?? true;
+
+    if (isBgmEnabled) {
+      assetsAudioPlayer.open(
+        Audio("assets/audio/Time_Bomb.mp3"),
+        loopMode: LoopMode.single,
+        autoStart: true,
+      );
     }
   }
 

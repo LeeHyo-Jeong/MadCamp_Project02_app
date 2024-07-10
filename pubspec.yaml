@@ -80,6 +80,7 @@ flutter:
   assets:
     - assets/.env
     - assets/football.png
+    - assets/app_icon.png
     - assets/kakao_login_large_wide.png
     - assets/kakao_login_medium_narrow.png
     - assets/audio/Time_Bomb.mp3

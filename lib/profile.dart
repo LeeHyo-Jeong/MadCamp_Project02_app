@@ -24,7 +24,8 @@ class ProfilePageState extends State<ProfilePage> {
 
   Future<void> _fetchUserData() async {
     try {
-      final response = await http.get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
+      final response = await http
+          .get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
       if (response.statusCode == 200) {
         final userData = jsonDecode(response.body);
         setState(() {
@@ -43,7 +44,7 @@ class ProfilePageState extends State<ProfilePage> {
       await UserApi.instance.logout();
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.remove("kakao_access_token");
-      await TokenManagerProvider.instance.manager.clear();  // 모든 토큰 삭제
+      await TokenManagerProvider.instance.manager.clear(); // 모든 토큰 삭제
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -79,17 +80,17 @@ class ProfilePageState extends State<ProfilePage> {
       body: userData == null
           ? Center(child: SpinKitChasingDots(color: Colors.black38))
           : SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            _buildProfileHeader(userData!),
-            SizedBox(height: 20),
-            _buildProfileInfo(userData!),
-            Divider(),
-            _buildProfileActions(userData!),
-          ],
-        ),
-      ),
+              child: Column(
+                children: [
+                  SizedBox(height: 20),
+                  _buildProfileHeader(userData!),
+                  SizedBox(height: 20),
+                  _buildProfileInfo(userData!),
+                  Divider(),
+                  _buildProfileActions(userData!),
+                ],
+              ),
+            ),
     );
   }
 
@@ -109,17 +110,17 @@ class ProfilePageState extends State<ProfilePage> {
             ClipOval(
               child: profileImageUrl != null
                   ? Image.network(
-                profileImageUrl,
-                fit: BoxFit.cover,
-                width: 100,
-                height: 100,
-              )
+                      profileImageUrl,
+                      fit: BoxFit.cover,
+                      width: 100,
+                      height: 100,
+                    )
                   : Image.asset(
-                'assets/football.png',
-                fit: BoxFit.cover,
-                width: 100,
-                height: 100,
-              ),
+                      'assets/football.png',
+                      fit: BoxFit.cover,
+                      width: 100,
+                      height: 100,
+                    ),
             ),
             SizedBox(width: 20),
             Column(
@@ -157,9 +158,11 @@ class ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildProfileInfoItem(Icons.star, "레벨: ${userData['level'] ?? "레벨 정보가 없습니다"}"),
+            _buildProfileInfoItem(
+                Icons.star, "레벨: ${userData['level'] ?? "레벨 정보가 없습니다"}"),
             Divider(),
-            _buildProfileInfoItem(Icons.group, "팀: ${userData['team'] ?? "팀 정보가 없습니다"}"),
+            _buildProfileInfoItem(
+                Icons.group, "팀: ${userData['team'] ?? "팀 정보가 없습니다"}"),
           ],
         ),
       ),
@@ -190,7 +193,8 @@ class ProfilePageState extends State<ProfilePage> {
           onTap: () async {
             final result = await Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => EditProfilePage(userData: userData)),
+              MaterialPageRoute(
+                  builder: (context) => EditProfilePage(userData: userData)),
             );
             if (result == true) {
               _fetchUserData();
@@ -203,7 +207,8 @@ class ProfilePageState extends State<ProfilePage> {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => NotificationSettingsPage()),
+              MaterialPageRoute(
+                  builder: (context) => NotificationSettingsPage()),
             );
           },
         ),
@@ -216,7 +221,6 @@ class ProfilePageState extends State<ProfilePage> {
     );
   }
 }
-
 
 class EditProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;
@@ -328,10 +332,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 }
 
-
 class NotificationSettingsPage extends StatefulWidget {
   @override
-  _NotificationSettingsPageState createState() => _NotificationSettingsPageState();
+  _NotificationSettingsPageState createState() =>
+      _NotificationSettingsPageState();
 }
 
 class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
@@ -357,7 +361,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
       prefs.setBool('isBgmEnabled', _isBgmEnabled);
       if (_isBgmEnabled) {
         assetsAudioPlayer.open(
-          Audio("assets/audio/bgm.mp3"),
+          Audio("assets/audio/Time_Bomb.mp3"),
           loopMode: LoopMode.single,
           autoStart: true,
         );

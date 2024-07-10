@@ -142,7 +142,9 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Text("홈", style: TextStyle(fontFamily: 'Elice')),
+        title: Center(
+          child: Image.asset('assets/app_icon.png', width: 50, height: 50),
+        ),
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder<User>(

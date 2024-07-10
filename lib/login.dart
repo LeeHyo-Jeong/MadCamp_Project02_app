@@ -116,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
           SizedBox(height: 40),
           Align(
             alignment: Alignment.centerRight,
-              child: Image.asset("assets/football.png", width: 130, height: 130,)),
+              child: Image.asset("assets/app_icon.png", width: 150, height: 150,)),
           SizedBox(height: 80),
           Center(
             child: InkWell(
