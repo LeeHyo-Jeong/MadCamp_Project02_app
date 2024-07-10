@@ -113,11 +113,11 @@ class _LoginPageState extends State<LoginPage> {
               Text("간편로그인 후", style: TextStyle(fontFamily: 'Elice', fontSize: 25)),
               Text("이용이", style: TextStyle(fontFamily: 'Elice', fontSize: 25)),
               Text("가능합니다.", style: TextStyle(fontFamily: 'Elice', fontSize: 25)),
-          SizedBox(height: 40),
+          SizedBox(height: 100),
           Align(
-            alignment: Alignment.centerRight,
-              child: Image.asset("assets/app_icon.png", width: 150, height: 150,)),
-          SizedBox(height: 80),
+            alignment: Alignment.center,
+              child: Image.asset("assets/kickin.png", width: 200, height: 200,)),
+          SizedBox(height: 60),
           Center(
             child: InkWell(
               onTap: () {
