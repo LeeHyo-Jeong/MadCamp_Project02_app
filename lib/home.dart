@@ -8,6 +8,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:animations/animations.dart'; // animations 패키지 추가
+import 'dart:async';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 
 class HomePage extends StatefulWidget {
   final User user;
@@ -186,131 +190,133 @@ class HomePageState extends State<HomePage> {
                 itemBuilder: (context, index) {
                   Match match = matches[index];
                   bool userReserved = isUserReserved(match);
-                  return Card(
-                    color: Colors.white,
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: Colors.grey.shade300, width: 1),
-                    ),
-                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    child: Column(
-                      children: [
-                        Container(
-                          color: Colors.white,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 8,
-                                height: 85,  // You can adjust the height based on your needs
-                                color: (match.cur_member ?? 0) >= match.max_member!
-                                    ? Colors.red
-                                    : (match.cur_member ?? 0) > (match.max_member! / 2)
-                                    ? Colors.orange
-                                    : Colors.blue,
-                              ),
-                              Expanded(
-                                child: ListTile(
-                                  contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                  title: Text(
-                                    match.matchTitle,
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                                  ),
-                                  subtitle: Container(
-                                    color: Colors.grey.shade200,
-                                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                  return OpenContainer(
+                    closedBuilder: (context, action) => Card(
+                      color: Colors.white,
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: Colors.grey.shade300, width: 1),
+                      ),
+                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      child: Column(
+                        children: [
+                          Container(
+                            color: Colors.white,
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 85,  // You can adjust the height based on your needs
+                                  color: (match.cur_member ?? 0) >= match.max_member!
+                                      ? Colors.red
+                                      : (match.cur_member ?? 0) > (match.max_member! / 2)
+                                      ? Colors.orange
+                                      : Colors.blue,
+                                ),
+                                Expanded(
+                                  child: ListTile(
+                                    contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                    title: Text(
+                                      match.matchTitle,
+                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                                    ),
+                                    subtitle: Container(
+                                      color: Colors.grey.shade200,
+                                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '${match.date} ${match.time}',
+                                            style: TextStyle(fontSize: 13),
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(
+                                            '${match.max_member} vs ${match.max_member}',
+                                            style: TextStyle(fontSize: 13),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    trailing: Column(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
-                                          '${match.date} ${match.time}',
-                                          style: TextStyle(fontSize: 13),
+                                          '${match.cur_member ?? 0} / ${match.max_member}',
+                                          style: TextStyle(fontSize: 14),
                                         ),
                                         SizedBox(height: 5),
-                                        Text(
-                                          '${match.max_member} vs ${match.max_member}',
-                                          style: TextStyle(fontSize: 13),
+                                        Flexible(
+                                          child: ElevatedButton(
+                                            onPressed: (userReserved || (match.cur_member ?? 0) >= match.max_member)
+                                                ? null
+                                                : () => reserveMatch(match),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: getButtonColor(match),
+                                            ).copyWith(
+                                              backgroundColor: MaterialStateProperty.resolveWith<Color?>(
+                                                    (Set<MaterialState> states) {
+                                                  if (states.contains(MaterialState.disabled)) {
+                                                    return getButtonColor(match); // Preserve color when disabled
+                                                  }
+                                                  return getButtonColor(match); // Default button color
+                                                },
+                                              ),
+                                            ),
+                                            child: Text(
+                                              getButtonLabel(match),
+                                              style: TextStyle(color: Colors.white, fontSize: 12),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  trailing: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        '${match.cur_member ?? 0} / ${match.max_member}',
-                                        style: TextStyle(fontSize: 14),
-                                      ),
-                                      SizedBox(height: 5),
-                                      Flexible(
-                                        child: ElevatedButton(
-                                          onPressed: (userReserved || (match.cur_member ?? 0) >= match.max_member)
-                                              ? null
-                                              : () => reserveMatch(match),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: getButtonColor(match),
-                                          ).copyWith(
-                                            backgroundColor: WidgetStateProperty.resolveWith<Color?>(
-                                                  (Set<WidgetState> states) {
-                                                if (states.contains(WidgetState.disabled)) {
-                                                  return getButtonColor(match); // Preserve color when disabled
-                                                }
-                                                return getButtonColor(match); // Default button color
-                                              },
-                                            ),
-                                          ),
-                                          child: Text(
-                                            getButtonLabel(match),
-                                            style: TextStyle(color: Colors.white, fontSize: 12),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  onTap: () async {
-                                    final deletedMatchId = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            MatchDetailPage(match: match, currentUserId: user.id.toString(), user: user),
-                                      ),
-                                    );
-                                    fetchMatches();
-                                  },
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
+                    ),
+                    openBuilder: (context, action) => MatchDetailPage(
+                      match: match,
+                      currentUserId: user.id.toString(),
+                      user: user,
                     ),
                   );
                 },
               ),
-              floatingActionButton: FloatingActionButton.extended(
-                shape: RoundedRectangleBorder(
+              floatingActionButton: OpenContainer(
+                closedElevation: 6.0,
+                transitionType: ContainerTransitionType.fadeThrough,
+                closedShape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
-                onPressed: () async {
-                  final newMatch = await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PostMatchPage()),
+                closedColor: Colors.black,
+                openBuilder: (context, action) {
+                  return FutureBuilder(
+                    future: Future.delayed(Duration(milliseconds: 300)),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return PostMatchPage();
+                      } else {
+                        return Container(
+                          color: Colors.white,
+                          child: Center(
+                            child: SpinKitChasingDots(color: Colors.black38)),
+
+                        );
+                      }
+                    },
                   );
-                  if (newMatch != null) {
-                    Fluttertoast.showToast(
-                      msg: '새 경기가 등록되었습니다',
-                      toastLength: Toast.LENGTH_SHORT,
-                      gravity: ToastGravity.CENTER,
-                      timeInSecForIosWeb: 1,
-                      backgroundColor: Colors.black54,
-                      fontSize: 15.0,
-                      textColor: Colors.white,
-                    );
-                    fetchMatches();
-                  }
                 },
-                label: Text("새 경기 등록하기", style: TextStyle(color: Colors.white)),
-                backgroundColor: Colors.black,
+                closedBuilder: (context, action) => FloatingActionButton.extended(
+                  onPressed: action,
+                  label: Text("새 경기 등록하기", style: TextStyle(color: Colors.white)),
+                  backgroundColor: Colors.black,
+                ),
               ),
             );
           }

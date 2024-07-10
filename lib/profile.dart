@@ -85,6 +85,7 @@ class ProfilePageState extends State<ProfilePage> {
             _buildProfileHeader(userData!),
             SizedBox(height: 20),
             _buildProfileInfo(userData!),
+            SizedBox(height: 20),
             Divider(),
             _buildProfileActions(userData!),
           ],
