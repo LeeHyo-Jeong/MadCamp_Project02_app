@@ -56,8 +56,9 @@ class HomePageState extends State<HomePage> {
 
   Future<void> fetchMatches() async {
     List<Match> fetchedMatches = await getAllMatches();
+    matches = fetchedMatches;
     setState(() {
-      matches = fetchedMatches;
+      
     });
   }
 

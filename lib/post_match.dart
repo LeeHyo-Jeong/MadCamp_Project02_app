@@ -298,6 +298,7 @@ class _PostMatchPageState extends State<PostMatchPage> {
                       return null;
                     }),
                 DropdownButtonFormField<int>(
+                  dropdownColor: Colors.white,
                   decoration: InputDecoration(labelText: '팀 인원 수'),
                   value: _selectedMemberCount,
                   items: _memberOptions.map((int value) {

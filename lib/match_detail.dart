@@ -23,6 +23,41 @@ class MatchDetailPage extends StatefulWidget {
 
 class _MatchDetailPageState extends State<MatchDetailPage> {
   String? ip = dotenv.env['ip'];
+  double? averageLevel;
+
+  @override
+  void initState(){
+    super.initState();
+    _loadAverageLevel();
+  }
+
+  Future<void> _loadAverageLevel() async{
+    final level = await fetchAverageLevel((widget.match.matchId).toString());
+    setState(() {
+      averageLevel = level;
+    });
+  }
+
+  Future<double?> fetchAverageLevel(String matchId) async{
+    final String? baseUrl = dotenv.env['ip'];
+    final url = Uri.parse('http://$baseUrl:3000/api/match/$matchId/average-level');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        num averageNum = data['averageLevel'];
+        return averageNum.toDouble();
+      } else {
+        print('Failed to load average level: ${response.statusCode}');
+        return null;
+      }
+    } catch (error) {
+      print('Error fetching average level: $error');
+      return null;
+    }
+  }
 
   Future<void> reserveMatch(Match match) async {
     if ((match.cur_member ?? 0) >= (match.max_member ?? double.infinity)) {
@@ -168,7 +203,7 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('${widget.match.matchTitle}',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          SizedBox(height: 16),
+                  SizedBox(height: 16),
           if (widget.match.image != null)
             Center(
                 child: Image.network(
@@ -189,6 +224,14 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
             ],
           ),
           SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Icon(Icons.stars_outlined, color: Colors.black54),
+                      SizedBox(width: 4),
+                      Text("평균 ${averageLevel}레벨", style: TextStyle(fontSize: 15)),
+                    ],
+                  ),
+                  SizedBox(height: 10),
           Row(
             children: [
               Icon(Icons.calendar_today, color: Colors.black54),

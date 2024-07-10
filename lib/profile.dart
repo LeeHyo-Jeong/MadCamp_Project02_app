@@ -239,10 +239,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final _levelController = TextEditingController();
   final _teamController = TextEditingController();
   String? ip = dotenv.env['ip'];
+  int? _selectedLevel;
+  List<int> _levelOptions = [1, 2, 3, 4, 5];
 
   @override
   void initState() {
     super.initState();
+    _selectedLevel = widget.userData['level'] ?? 0;
     _nicknameController.text = widget.userData['profile_nickname'] ?? '';
     _memoController.text = widget.userData['memo'] ?? '';
     _levelController.text = widget.userData['level']?.toString() ?? '';
@@ -283,6 +286,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
         title: Text('개인 정보 수정'),
       ),
       body: Padding(
@@ -305,12 +309,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 controller: _memoController,
                 decoration: InputDecoration(labelText: '메모'),
               ),
-              TextFormField(
-                controller: _levelController,
-                decoration: InputDecoration(labelText: '레벨'),
-                keyboardType: TextInputType.number,
+              DropdownButtonFormField<int>(
+                dropdownColor: Colors.white,
+                decoration: InputDecoration(labelText: '레벨',                                filled: true,
+                    fillColor: Colors.white),
+                value: _selectedLevel,
+                items: _levelOptions.map((int value){
+                  return DropdownMenuItem<int>(
+                    value: value,
+                    child: Text(value.toString()),
+                  );
+                }).toList(),
+                onChanged: (newValue){
+                  setState(() {
+                    _selectedLevel = newValue;
+                  });
+                },
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
+                  if (value == null) {
                     return '레벨을 입력하세요';
                   }
                   return null;
@@ -322,8 +338,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               SizedBox(height: 20),
               ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,),
                 onPressed: _updateProfile,
-                child: Text('수정'),
+                child: Text('수정', style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
