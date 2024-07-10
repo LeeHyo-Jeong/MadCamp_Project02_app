@@ -59,7 +59,7 @@ Future<List<Match>> getAllMatches() async {
   if (response.statusCode == 200) {
     final List<dynamic> matchesData = jsonDecode(response.body);
     final List<Match> matches =
-        matchesData.map((data) => Match.fromJson(data)).toList();
+    matchesData.map((data) => Match.fromJson(data)).toList();
     //print("Matches data: ${matches.map((match) => match.toJson())}");
     return matches;
   } else {
@@ -150,17 +150,17 @@ class _PostMatchPageState extends State<PostMatchPage> {
       }
 
       final newMatch = Match(
-        matchId: DateTime.now().millisecondsSinceEpoch,
-        date: _selectedDate!,
-        time: _selectedTime!,
-        place: _placeController.text,
-        matchTitle: _titleController.text,
-        content: _contentController.text,
-        max_member: _selectedMemberCount!,
-        level: int.parse(_levelController.text),
-        match_members: [],
-        image: imageUrl,
-        user_id: user!.id.toString()
+          matchId: DateTime.now().millisecondsSinceEpoch,
+          date: _selectedDate!,
+          time: _selectedTime!,
+          place: _placeController.text,
+          matchTitle: _titleController.text,
+          content: _contentController.text,
+          max_member: _selectedMemberCount!,
+          level: int.parse(_levelController.text),
+          match_members: [],
+          image: imageUrl,
+          user_id: user!.id.toString()
       );
       addMatch(newMatch);
       Navigator.pop(context, newMatch);
@@ -169,20 +169,20 @@ class _PostMatchPageState extends State<PostMatchPage> {
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime(2101),
-      builder: (BuildContext context, Widget? child){
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Colors.white70,
-            colorScheme: ColorScheme.light(primary: Colors.black),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child!,
-        );
-      }
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime(2101),
+        builder: (BuildContext context, Widget? child){
+          return Theme(
+            data: ThemeData.light().copyWith(
+              primaryColor: Colors.white70,
+              colorScheme: ColorScheme.light(primary: Colors.black),
+              buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            ),
+            child: child!,
+          );
+        }
     );
     if (picked != null) {
       setState(() {
@@ -194,24 +194,24 @@ class _PostMatchPageState extends State<PostMatchPage> {
 
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      builder: (BuildContext context, Widget? child){
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: Colors.white70,
-            colorScheme: ColorScheme.light(primary: Colors.black),
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
-          ),
-          child: child!,
-        );
-      }
+        context: context,
+        initialTime: TimeOfDay.now(),
+        builder: (BuildContext context, Widget? child){
+          return Theme(
+            data: ThemeData.light().copyWith(
+              primaryColor: Colors.white70,
+              colorScheme: ColorScheme.light(primary: Colors.black),
+              buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+            ),
+            child: child!,
+          );
+        }
     );
     if (picked != null) {
       setState(() {
         final now = DateTime.now();
         final selectedDateTime =
-            DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+        DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
         _selectedTime = DateFormat("HH시 mm분").format(selectedDateTime);
         _timeController.text = _selectedTime!;
       });

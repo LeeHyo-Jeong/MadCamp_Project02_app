@@ -15,6 +15,7 @@ import 'package:kakaotest/audio_player_service.dart';
 import 'package:kakaotest/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 void main() async {
   await dotenv.load(fileName: "assets/.env");
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,16 +25,6 @@ void main() async {
     javaScriptAppKey: dotenv.env['javaScriptAppKey'],
   );
 
-  final prefs = await SharedPreferences.getInstance();
-  bool isBgmEnabled = prefs.getBool('isBgmEnabled') ?? true;
-
-  if (isBgmEnabled) {
-    assetsAudioPlayer.open(
-      Audio("assets/audio/Time_Bomb.mp3"),
-      loopMode: LoopMode.single,
-      autoStart: true,
-    );
-  }
 
   runApp(MyApp());
 }
@@ -76,13 +67,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<ProfilePageState> _profilePageKey = GlobalKey<ProfilePageState>();
 
   late List<Widget> _pages;
-  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-
-    _pageController = PageController(initialPage: _selectedIndex);
 
     _pages = [
       HomePage(key: _homePageKey, user: widget.user),
@@ -112,6 +100,19 @@ class _MyHomePageState extends State<MyHomePage> {
           print('Failed to update isFirstLogin');
         }
       });
+    }
+    _initBgm();
+  }
+  Future<void> _initBgm() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool isBgmEnabled = prefs.getBool('isBgmEnabled') ?? true;
+
+    if (isBgmEnabled) {
+      assetsAudioPlayer.open(
+        Audio("assets/audio/Time_Bomb.mp3"),
+        loopMode: LoopMode.single,
+        autoStart: true,
+      );
     }
   }
 
@@ -149,11 +150,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-      _pageController.animateToPage(
-        index,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
       if (index == 1) {
         _reservationPageKey.currentState?.fetchReservations();
         fetchUserData();
@@ -166,32 +162,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Widget _buildFadeWidgetByPageIndex() {
-    return PageView(
-      controller: _pageController,
-      onPageChanged: (index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-        if (index == 1) {
-          _reservationPageKey.currentState?.fetchReservations();
-          fetchUserData();
-        } else if (index == 0) {
-          _homePageKey.currentState?.fetchMatches();
-          fetchUserData();
-        } else if (index == 2) {
-          fetchUserDataForProfilePage();
-        }
-      },
-      children: _pages,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: _buildFadeWidgetByPageIndex(),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.white,
         type: BottomNavigationBarType.shifting,
@@ -221,3 +199,43 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+// // splash screen 만들기..
+//
+// class SplashScreen extends StatefulWidget {
+//   final User user;
+//   final GlobalKey<HomePageState> _homePageKey;
+//
+//   SplashScreen({required this.user, this.homePageKey});
+//
+//   @override
+//   _SplashScreenState createState() => _SplashScreenState();
+// }
+//
+// class _SplashScreenState extends State<SplashScreen> {
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _navigateToHome();
+//   }
+//
+//   _navigateToHome() async {
+//     await Future.delayed(Duration(seconds: 3), () {}); // 3초 대기
+//     Navigator.pushReplacement(
+//       context,
+//       MaterialPageRoute(builder: (context) =>
+//           HomePage(key: widget.homePageKey, user: widget.user)),
+//     );
+//
+//     @override
+//     Widget build(BuildContext context) {
+//       return MaterialApp(
+//         home: LoginPage(),
+//         routes: {
+//           '/login': (context) => LoginPage(),
+//         },
+//       );
+//     }
+//   }
+//   }

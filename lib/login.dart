@@ -93,18 +93,18 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            SystemNavigator.pop();
-          },
-        )
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0),
-        child:
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                SystemNavigator.pop();
+              },
+            )
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child:
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -113,24 +113,24 @@ class _LoginPageState extends State<LoginPage> {
               Text("간편로그인 후", style: TextStyle(fontFamily: 'Elice', fontSize: 25)),
               Text("이용이", style: TextStyle(fontFamily: 'Elice', fontSize: 25)),
               Text("가능합니다.", style: TextStyle(fontFamily: 'Elice', fontSize: 25)),
-          SizedBox(height: 40),
-          Align(
-            alignment: Alignment.centerRight,
-              child: Image.asset("assets/football.png", width: 130, height: 130,)),
-          SizedBox(height: 80),
-          Center(
-            child: InkWell(
-              onTap: () {
-                signInWithKakao();
-              },
-              child: Image.asset(
-                'assets/kakao_login_large_wide.png',
+              SizedBox(height: 40),
+              Align(
+                  alignment: Alignment.centerRight,
+                  child: Image.asset("assets/app_icon.png", width: 150, height: 150,)),
+              SizedBox(height: 80),
+              Center(
+                child: InkWell(
+                  onTap: () {
+                    signInWithKakao();
+                  },
+                  child: Image.asset(
+                    'assets/kakao_login_large_wide.png',
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
-    )
+        )
     );
   }
 }
