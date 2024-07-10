@@ -7,7 +7,7 @@ A new Flutter project.
 
 킥인을 통해 언제 어디서나 경기에 참여하세요!
 
-##Details
+## Details
 탭1: 홈
 
 appbar에는 kakao 소셜 로그인을 통해 로그인 한 사용자의 카카오톡 프로필 사진과 닉네임이 표시됩니다. 
