@@ -51,7 +51,7 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
         }),
       );
       //print(response.statusCode);
-      print('Response body: ${response.body}');
+      //print('Response body: ${response}');
       if (response.statusCode == 200) {
         Navigator.pop(context, true);
       } else {

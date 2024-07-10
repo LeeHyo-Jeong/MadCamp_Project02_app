@@ -73,6 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final GlobalKey<HomePageState> _homePageKey = GlobalKey<HomePageState>();
   final GlobalKey<ReservationPageState> _reservationPageKey = GlobalKey<ReservationPageState>();
+  final GlobalKey<ProfilePageState> _profilePageKey = GlobalKey<ProfilePageState>();
 
   late List<Widget> _pages;
 
@@ -83,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _pages = [
       HomePage(key: _homePageKey, user: widget.user),
       ReservationPage(key: _reservationPageKey, user: widget.user),
-      ProfilePage(user: widget.user)
+      ProfilePage(key: _profilePageKey, user: widget.user),
     ];
 
     if (widget.isFirstLogin && !_dialogShown) {
@@ -118,34 +119,6 @@ class _MyHomePageState extends State<MyHomePage> {
       if (response.statusCode == 200) {
         final userData = jsonDecode(response.body);
         _homePageKey.currentState?.updateUserData(userData);
-      } else {
-        throw Exception('Failed to load user data');
-      }
-    } catch (error) {
-      print('Error fetching user data: $error');
-    }
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-      if (index == 1) {
-        _reservationPageKey.currentState?.fetchReservations();
-        fetchUserDataForReservationPage();
-      } else if (index == 0) {
-        _homePageKey.currentState?.fetchMatches();
-        fetchUserData();
-      } else if (index == 2) {
-        //fetchUserDataForProfilePage();
-      }
-    });
-  }
-  Future<void> fetchUserDataForReservationPage() async {
-    try {
-      final response = await http.get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
-      print("response: ${response.body}");
-      if (response.statusCode == 200) {
-        final userData = jsonDecode(response.body);
         _reservationPageKey.currentState?.updateUserData(userData);
       } else {
         throw Exception('Failed to load user data');
@@ -154,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
       print('Error fetching user data: $error');
     }
   }
-/*
+
   Future<void> fetchUserDataForProfilePage() async {
     try {
       final response = await http.get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
@@ -169,7 +142,22 @@ class _MyHomePageState extends State<MyHomePage> {
       print('Error fetching user data: $error');
     }
   }
-  */
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      if (index == 1) {
+        _reservationPageKey.currentState?.fetchReservations();
+        fetchUserData();
+      } else if (index == 0) {
+        _homePageKey.currentState?.fetchMatches();
+        fetchUserData();
+      } else if (index == 2) {
+        fetchUserDataForProfilePage();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
