@@ -15,20 +15,26 @@ class ProfilePage extends StatefulWidget {
   final User user;
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  State<ProfilePage> createState() => ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
-  late Future<Map<String, dynamic>> futureUserData;
+class ProfilePageState extends State<ProfilePage> {
+  Map<String, dynamic>? userData;
   String? ip = dotenv.env['ip'];
 
-  Future<Map<String, dynamic>> _fetchUserData() async {
-    final response = await http.get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
-    //print("response: {$response.body}");
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load user data');
+  Future<void> _fetchUserData() async {
+    try {
+      final response = await http.get(Uri.parse('http://$ip:3000/api/user/${widget.user.id}'));
+      if (response.statusCode == 200) {
+        final userData = jsonDecode(response.body);
+        setState(() {
+          this.userData = userData;
+        });
+      } else {
+        throw Exception('Failed to load user data');
+      }
+    } catch (error) {
+      print('Error fetching user data: $error');
     }
   }
 
@@ -50,7 +56,13 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    futureUserData = _fetchUserData();
+    _fetchUserData();
+  }
+
+  void updateUserData(Map<String, dynamic> data) {
+    setState(() {
+      userData = data;
+    });
   }
 
   @override
@@ -64,35 +76,25 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         automaticallyImplyLeading: false,
       ),
-      body: FutureBuilder<Map<String, dynamic>>(
-        future: futureUserData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: SpinKitChasingDots(color: Colors.black38));
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Failed to load user info'));
-          } else {
-            final userData = snapshot.data!;
-            final profileImageUrl = userData['image_url'];
-            return SingleChildScrollView(
-              child: Column(
-                children: [
-                  SizedBox(height: 20),
-                  _buildProfileHeader(profileImageUrl, userData),
-                  SizedBox(height: 20),
-                  _buildProfileInfo(userData),
-                  Divider(),
-                  _buildProfileActions(userData),
-                ],
-              ),
-            );
-          }
-        },
+      body: userData == null
+          ? Center(child: SpinKitChasingDots(color: Colors.black38))
+          : SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            _buildProfileHeader(userData!),
+            SizedBox(height: 20),
+            _buildProfileInfo(userData!),
+            Divider(),
+            _buildProfileActions(userData!),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildProfileHeader(String? profileImageUrl, Map<String, dynamic> userData) {
+  Widget _buildProfileHeader(Map<String, dynamic> userData) {
+    final profileImageUrl = userData['image_url'];
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 16.0),
       elevation: 4.0,
@@ -189,9 +191,7 @@ class _ProfilePageState extends State<ProfilePage> {
               MaterialPageRoute(builder: (context) => EditProfilePage(userData: userData)),
             );
             if (result == true) {
-              setState(() {
-                futureUserData = _fetchUserData();
-              });
+              _fetchUserData();
             }
           },
         ),
@@ -214,6 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 }
+
 
 class EditProfilePage extends StatefulWidget {
   final Map<String, dynamic> userData;

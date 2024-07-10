@@ -34,8 +34,7 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
       final level = _selectedLevel;
       final team =
           _teamController.text.isNotEmpty ? _teamController.text : '무소속';
-      final memo =
-      _memoController.text.isNotEmpty ? _memoController.text : ' ';
+      final memo = _memoController.text.isNotEmpty ? _memoController.text : ' ';
       final userId = user.id.toString();
 
       final response = await http.post(
@@ -52,7 +51,7 @@ class _FirstLoginInfoDialogState extends State<FirstLoginInfoDialog> {
         }),
       );
       //print(response.statusCode);
-      print('Response body: ${response.body}');
+      //print('Response body: ${response}');
       if (response.statusCode == 200) {
         Navigator.pop(context, true);
       } else {
