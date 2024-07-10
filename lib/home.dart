@@ -308,8 +308,8 @@ class HomePageState extends State<HomePage> {
                       fontSize: 15.0,
                       textColor: Colors.white,
                     );
-                    fetchMatches();
                   }
+                  fetchMatches();
                 },
                 label: Text("새 경기 등록하기", style: TextStyle(color: Colors.white)),
                 backgroundColor: Colors.black,
